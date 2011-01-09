@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: instance_gundrak
 SD%Complete: 80
-SDComment: Reload case for bridge support is missing, achievement support is missing
+SDComment: Reload Case for Bridge support is missing
 SDCategory: Gundrak
 EndScriptData */
 
@@ -82,12 +82,11 @@ void instance_gundrak::OnCreatureCreate(Creature* pCreature)
     }
 }
 
-/* TODO: Reload case need some love!
+/* For the Keys should be used something like this, and for bridge and collision similar
 *  Problem is to get the bridge/ collision work correct in relaod case.
 *  To provide correct functionality(expecting testers to activate all altars in reload case), the Keys aren't loaded, too
-*  TODO: When fixed, also remove the SPECIAL->DONE data translation in Load().
 *
-*  For the Keys should be used something like this, and for bridge and collision similar
+*  TODO: When fixed, also remove the SPECIAL->DONE data translation in Load().
 *
 *   if (m_auiEncounter[0] == SPECIAL && m_auiEncounter[1] == SPECIAL && m_auiEncounter[2] == SPECIAL)
 *       pGo->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
@@ -186,7 +185,7 @@ void instance_gundrak::Load(const char* chrIn)
 
 void instance_gundrak::SetData(uint32 uiType, uint32 uiData)
 {
-    debug_log("SD2: Instance Gundrak: SetData received for type %u with data %u", uiType, uiData);
+    debug_log("SD2: Instance Gundrak: SetData received for type %u with data %u",uiType,uiData);
 
     switch(uiType)
     {
@@ -299,7 +298,7 @@ void instance_gundrak::DoAltarVisualEffect(uint8 uiType)
             fHeight += pCollusAltar->GetPositionZ();
 
         std::list<Creature*> lStalkerTargets, lStalkerCasters;
-        for (std::list<uint64>::const_iterator itr = m_luiStalkerGUIDs.begin(); itr != m_luiStalkerGUIDs.end(); ++itr)
+        for (std::list<uint64>::const_iterator itr = m_luiStalkerGUIDs.begin(); itr != m_luiStalkerGUIDs.end(); itr++)
         {
             if (Creature* pStalker = instance->GetCreature(*itr))
             {
@@ -314,9 +313,9 @@ void instance_gundrak::DoAltarVisualEffect(uint8 uiType)
         lStalkerTargets.sort(sortFromEastToWest);
         lStalkerCasters.sort(sortFromEastToWest);
 
-        for (std::list<Creature*>::const_iterator itr = lStalkerTargets.begin(); itr != lStalkerTargets.end(); ++itr)
+        for (std::list<Creature*>::const_iterator itr = lStalkerTargets.begin(); itr != lStalkerTargets.end(); itr++)
             m_luiStalkerTargetGUIDs.push_back((*itr)->GetGUID());
-        for (std::list<Creature*>::const_iterator itr = lStalkerCasters.begin(); itr != lStalkerCasters.end(); ++itr)
+        for (std::list<Creature*>::const_iterator itr = lStalkerCasters.begin(); itr != lStalkerCasters.end(); itr++)
             m_luiStalkerCasterGUIDs.push_back((*itr)->GetGUID());
     }
 
@@ -331,8 +330,7 @@ void instance_gundrak::DoAltarVisualEffect(uint8 uiType)
         case TYPE_SLADRAN:  uiIndex = 0; break;
         case TYPE_COLOSSUS: uiIndex = 1; break;
         case TYPE_MOORABI:  uiIndex = 2; break;
-        default:
-            return;
+        default: return;
     }
 
     std::list<uint64>::iterator targetItr = m_luiStalkerTargetGUIDs.begin();
@@ -349,7 +347,7 @@ void instance_gundrak::DoAltarVisualEffect(uint8 uiType)
 
     uint32 auiFireBeamSpells[3] = {SPELL_BEAM_SNAKE, SPELL_BEAM_ELEMENTAL, SPELL_BEAM_MAMMOTH};
 
-    // Cast from Caster to Target
+    // Cast from Caster to Target, triggered to avoid LoS-Check
     pCaster->CastSpell(pTarget, auiFireBeamSpells[uiIndex], true);
 }
 

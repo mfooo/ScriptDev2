@@ -243,6 +243,12 @@ enum
     NPC_FREED_GREENGILL_SLAVE           = 25085,
     NPC_DARKSPINE_MYRMIDON              = 25060,
     NPC_DARKSPINE_SIREN                 = 25073,
+	
+    // Quest "War Is Hell" 11270
+    NPC_FALLEN_COMBATANT_1              = 24009,
+    NPC_FALLEN_COMBATANT_2              = 24010,
+    SPELL_FALLEN_COMBATAN_CREDIT        = 43297,
+    SPELL_BURN_BODY                     = 42793,
 
     // quest 14107
     SPELL_BLESSING_OF_PEACE             = 66719,
@@ -700,6 +706,13 @@ bool EffectDummyCreature_spell_dummy_npc(Unit* pCaster, uint32 uiSpellId, SpellE
             pCreatureTarget->UpdateEntry(NPC_FREED_GREENGILL_SLAVE);
 
             pCreatureTarget->CastSpell(pCreatureTarget, SPELL_ENRAGE, true);
+
+            return true;
+        }
+        case SPELL_BURN_BODY:
+        {
+            if (pCreatureTarget->GetEntry() == NPC_FALLEN_COMBATANT_1 || pCreatureTarget->GetEntry() == NPC_FALLEN_COMBATANT_2)
+                pCreatureTarget->CastSpell(pCaster, SPELL_FALLEN_COMBATAN_CREDIT, true);
 
             return true;
         }

@@ -5,24 +5,19 @@
 #ifndef DEF_NEXUS_H
 #define DEF_NEXUS_H
 
-enum
+enum eTypes
 {
-    MAX_ENCOUNTER                  = 4,
+    DATA_MAGUS_TELESTRA_EVENT,
+    DATA_ANOMALUS_EVENT,
+    DATA_ORMOROK_EVENT,
+    DATA_KERISTRASZA_EVENT,
 
-    TYPE_TELESTRA                  = 0,
-    TYPE_ANOMALUS                  = 1,
-    TYPE_ORMOROK                   = 2,
-    TYPE_KERISTRASZA               = 3,
+    DATA_ANOMALUS,
+    DATA_KERISTRASZA,
 
-    NPC_TELESTRA                   = 26731,
-    NPC_ANOMALUS                   = 26763,
-    NPC_ORMOROK                    = 26794,
-    NPC_KERISTRASZA                = 26723,
-
-    GO_CONTAINMENT_SPHERE_TELESTRA = 188526,
-    GO_CONTAINMENT_SPHERE_ANOMALUS = 188527,
-    GO_CONTAINMENT_SPHERE_ORMOROK  = 188528,
-
-    SPELL_FROZEN_PRISON             = 47854                 // may not be correct spell
+    ANOMALUS_CONTAINMET_SPHERE,
+    ORMOROKS_CONTAINMET_SPHERE,
+    TELESTRAS_CONTAINMET_SPHERE
 };
+
 #endif

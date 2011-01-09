@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 /dev/rsa for ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2010 - 2011 /dev/rsa for ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -25,7 +25,7 @@ EndScriptData */
 // Attention please! This script required some core modification.
 
 #include "precompiled.h"
-#include "ruby_sanctum.h"
+#include "def_ruby_sanctum.h"
 
 enum 
 {
@@ -1203,7 +1203,7 @@ CreatureAI* GetAI_mob_fiery_combustion(Creature* pCreature)
 };
 
 
-bool GOHello_go_halion_portal_twilight(Player *player, GameObject* pGo)
+bool GOUse_go_halion_portal_twilight(Player *player, GameObject* pGo)
 {
     ScriptedInstance* pInstance = (ScriptedInstance*)pGo->GetInstanceData();
     if(!pInstance) return false;
@@ -1211,7 +1211,7 @@ bool GOHello_go_halion_portal_twilight(Player *player, GameObject* pGo)
     return true;
 }
 
-bool GOHello_go_halion_portal_real(Player *player, GameObject* pGo)
+bool GOUse_go_halion_portal_real(Player *player, GameObject* pGo)
 {
     ScriptedInstance* pInstance = (ScriptedInstance*)pGo->GetInstanceData();
     if(!pInstance) return false;
@@ -1275,11 +1275,11 @@ void AddSC_boss_halion()
 
     newscript = new Script;
     newscript->Name = "go_halion_portal_twilight";
-    newscript->pGOUse  = &GOHello_go_halion_portal_twilight;
+    newscript->pGOUse  = &GOUse_go_halion_portal_twilight;
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_halion_portal_real";
-    newscript->pGOUse  = &GOHello_go_halion_portal_real;
+    newscript->pGOUse  = &GOUse_go_halion_portal_real;
     newscript->RegisterSelf();
 }

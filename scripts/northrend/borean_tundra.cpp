@@ -645,7 +645,7 @@ enum
     NPC_SCOURGE_PRISONER        =  25610,
 };
 
-bool GOHello_go_scourge_cage(Player* pPlayer, GameObject* pGo)
+bool GOUse_go_scourge_cage(Player* pPlayer, GameObject* pGo)
 {
     if (pPlayer->GetQuestStatus(QUEST_MERCIFUL_FREEDOM) == QUEST_STATUS_INCOMPLETE)
     {
@@ -675,9 +675,9 @@ enum eBerylSorcerer
 
 struct MANGOS_DLL_DECL npc_beryl_sorcererAI : public FollowerAI
 {
-    npc_beryl_sorcererAI(Creature* pCreature) : FollowerAI(pCreature) { 
+    npc_beryl_sorcererAI(Creature* pCreature) : FollowerAI(pCreature) {  
         m_uiNormalFaction = pCreature->getFaction();
-        Reset(); 
+		Reset();
     }
 
     bool bEnslaved;
@@ -798,7 +798,7 @@ void AddSC_borean_tundra()
 
     newscript = new Script;
     newscript->Name = "go_scourge_cage";
-    newscript->pGOUse = &GOHello_go_scourge_cage;
+    newscript->pGOUse = &GOUse_go_scourge_cage;
     newscript->RegisterSelf();
 
     newscript = new Script;

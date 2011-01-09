@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: boss_erekem
 SDAuthor: ckegg
-SD%Complete: 50%
+SD%Complete: 0
 SDComment: 
 SDCategory: The Violet Hold
 EndScriptData */
@@ -95,6 +95,7 @@ struct MANGOS_DLL_DECL boss_erekemAI : public ScriptedAI
                     if ((*iter)->isDead())
                         (*iter)->Respawn();
 
+            
             m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
@@ -109,6 +110,7 @@ struct MANGOS_DLL_DECL boss_erekemAI : public ScriptedAI
             m_pInstance->SetData(TYPE_RIFT, FAIL);
             if(m_pInstance->GetData(TYPE_PORTAL6) == IN_PROGRESS) {m_pInstance->SetData(TYPE_PORTAL6, NOT_STARTED);}
             else {m_pInstance->SetData(TYPE_PORTAL12, NOT_STARTED);}
+            
         }
     }
     void Aggro(Unit* pWho)

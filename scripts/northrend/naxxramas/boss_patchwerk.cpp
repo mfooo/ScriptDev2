@@ -16,8 +16,8 @@
 
 /* ScriptData
 SDName: Boss_Patchwerk
-SD%Complete: 100
-SDComment:
+SD%Complete: 80
+SDComment: TODO: confirm how hateful strike work
 SDCategory: Naxxramas
 EndScriptData */
 
@@ -41,16 +41,18 @@ enum
     SPELL_SLIMEBOLT       = 32309
 };
 
+const float MELEE_DISTANCE = 5.0;
+
 struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
 {
     boss_patchwerkAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        m_pInstance = (instance_naxxramas*)pCreature->GetInstanceData();
         m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
         Reset();
     }
 
-    ScriptedInstance* m_pInstance;
+    instance_naxxramas* m_pInstance;
     bool m_bIsRegularMode;
 
     uint32 m_uiHatefulStrikeTimer;
@@ -66,6 +68,12 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
         m_uiSlimeboltTimer = 10000;
         m_bEnraged = false;
         m_bBerserk = false;
+    }
+
+    void JustReachedHome()
+    {
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_PATCHWERK, FAIL);
     }
 
     void KilledUnit(Unit* pVictim)
@@ -92,12 +100,6 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
             m_pInstance->SetData(TYPE_PATCHWERK, IN_PROGRESS);
     }
 
-    void JustReachedHome()
-    {
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_PATCHWERK, FAIL);
-    }
-
     void DoHatefulStrike()
     {
         // The ability is used on highest HP target choosen of the top 2 (3 heroic) targets on threat list being in melee range
@@ -105,22 +107,24 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
         uint32 uiHighestHP = 0;
         uint32 uiTargets = m_bIsRegularMode ? 2 : 3;
 
-        ThreatList const& tList = m_creature->getThreatManager().getThreatList();
-        for (ThreatList::const_iterator iter = tList.begin();iter != tList.end(); ++iter)
+        ThreatList const& lThreatList = m_creature->getThreatManager().getThreatList();
+        for (ThreatList::const_iterator iter = lThreatList.begin(); iter != lThreatList.end(); ++iter)
         {
             if (!uiTargets)
                 break;
 
             if (Unit* pTempTarget = m_creature->GetMap()->GetUnit((*iter)->getUnitGuid()))
             {
-                if (pTempTarget->GetHealth() > uiHighestHP && m_creature->IsWithinDistInMap(pTempTarget, ATTACK_DISTANCE))
+                if (pTempTarget->GetHealth() > uiHighestHP && m_creature->IsWithinDistInMap(pTempTarget, MELEE_DISTANCE))
                 {
                     uiHighestHP = pTempTarget->GetHealth();
                     pTarget = pTempTarget;
                 }
             }
+
             --uiTargets;
         }
+
         if (pTarget)
             DoCast(pTarget, m_bIsRegularMode ? SPELL_HATEFULSTRIKE : SPELL_HATEFULSTRIKE_H);
     }
@@ -142,13 +146,11 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
         // Soft Enrage at 5%
         if (!m_bEnraged)
         {
-            if (m_creature->GetHealthPercent() < 5.0f)
+            if (m_creature->GetHealth()*20 < m_creature->GetMaxHealth())
             {
-                if (DoCastSpellIfCan(m_creature, SPELL_ENRAGE) == CAST_OK)
-                {
-                    DoScriptText(EMOTE_GENERIC_ENRAGED, m_creature);
-                    m_bEnraged = true;
-                }
+                DoCast(m_creature, SPELL_ENRAGE);
+                DoScriptText(EMOTE_GENERIC_ENRAGED, m_creature);
+                m_bEnraged = true;
             }
         }
 
@@ -157,11 +159,9 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
         {
             if (m_uiBerserkTimer < uiDiff)
             {
-                if (DoCastSpellIfCan(m_creature, SPELL_BERSERK) == CAST_OK)
-                {
-                    DoScriptText(EMOTE_GENERIC_BERSERK, m_creature);
-                    m_bBerserk = true;
-                }
+                DoCast(m_creature, SPELL_BERSERK);
+                DoScriptText(EMOTE_GENERIC_BERSERK, m_creature);
+                m_bBerserk = true;
             }
             else
                 m_uiBerserkTimer -= uiDiff;

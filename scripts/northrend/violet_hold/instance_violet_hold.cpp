@@ -74,7 +74,8 @@ struct MANGOS_DLL_DECL instance_violet_hold : public ScriptedInstance
 
     void Initialize()
     {
-        for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+//        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+	    for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
             m_auiEncounter[i] = NOT_STARTED;
 
         m_uiSinclariGUID = 0;
@@ -87,7 +88,7 @@ struct MANGOS_DLL_DECL instance_violet_hold : public ScriptedInstance
         m_uiXevozzGUID      = 0;
         m_uiLavanthorGUID   = 0;
         m_uiZuramatGUID     = 0;
-
+        
         m_uiDisruptions     = 0;
 
         m_uiSealDoorGUID        = 0;
@@ -123,7 +124,7 @@ struct MANGOS_DLL_DECL instance_violet_hold : public ScriptedInstance
         if(m_auiEncounter[0] != NOT_STARTED)
             pPlayer->SendUpdateWorldState(WORLD_STATE_VH,1);
     }
-
+    
     bool IsEncounterInProgress() const
     {
         for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
@@ -264,7 +265,7 @@ struct MANGOS_DLL_DECL instance_violet_hold : public ScriptedInstance
                     {   DoUpdateWorldState(WORLD_STATE_VH, 0);
                         DoUseDoorOrButton(m_uiSealDoorGUID);
                         m_auiEncounter[0] = FAIL;
-                    }
+                        }
                 }
                 break;
             case TYPE_DISRUPTIONS:
@@ -326,6 +327,7 @@ struct MANGOS_DLL_DECL instance_violet_hold : public ScriptedInstance
             {
                 if (m_uiLastBossID == 0)
                     m_uiLastBossID = urand(2, 7);
+//                    m_uiLastBossID = 3;
                 else
                 {
                     m_uiLastBossID = urand(2, 7);
@@ -338,9 +340,9 @@ struct MANGOS_DLL_DECL instance_violet_hold : public ScriptedInstance
                     while ( m_auiEncounter[m_uiLastBossID] == DONE
                             || m_auiEncounter[m_uiLastBossID] == IN_PROGRESS 
                             || m_auiEncounter[m_uiLastBossID] == SPECIAL ) 
-                        {
-                            m_uiLastBossID = urand(2, 7);
-                        }
+                            {
+                    m_uiLastBossID = urand(2, 7);
+                    }
                 }
                 return m_uiLastBossID;
             }

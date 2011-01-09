@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software licensed under GPL version 2
  * Please see the included DOCS/LICENSE.TXT for more information */
 
@@ -182,5 +182,14 @@ struct MANGOS_DLL_DECL Scripted_NoMovementAI : public ScriptedAI
     //Called at each attack of m_creature by any victim
     void AttackStart(Unit*);
 };
+
+// Trinity
+#define SCRIPT_CAST_TYPE dynamic_cast
+//#define SCRIPT_CAST_TYPE static_cast
+#define CAST_PLR(a)     (SCRIPT_CAST_TYPE<Player*>(a))
+#define CAST_CRE(a)     (SCRIPT_CAST_TYPE<Creature*>(a))
+#define CAST_SUM(a)     (SCRIPT_CAST_TYPE<TempSummon*>(a))
+#define CAST_PET(a)     (SCRIPT_CAST_TYPE<Pet*>(a))
+#define CAST_AI(a,b)    (SCRIPT_CAST_TYPE<a*>(b))
 
 #endif

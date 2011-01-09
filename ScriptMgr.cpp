@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software licensed under GPL version 2
  * Please see the included DOCS/LICENSE.TXT for more information */
 
@@ -11,6 +11,7 @@
 #include "ProgressBar.h"
 #include "../system/ScriptLoader.h"
 #include "../system/system.h"
+#include "World.h"
 #include "../../../game/ScriptMgr.h"
 
 int num_sc_scripts;
@@ -22,6 +23,23 @@ QueryResult* strSD2Pquery(char* str)
 {
 return SD2Database.Query(str);
 }
+
+/**********************************************************************
+additions for windows compiler
+**********************************************************************/
+template<> bool MaNGOS::Singleton<World>::si_destroyed;
+template<> bool MaNGOS::Singleton<ObjectMgr>::si_destroyed;
+template<> World *MaNGOS::Singleton<World>::si_instance;
+World::World()
+{
+}
+World::~World()
+{
+}
+ObjectMgr::~ObjectMgr()
+{
+}
+/***********************************************************************/
 
 void FillSpellSummary();
 

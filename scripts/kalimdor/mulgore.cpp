@@ -27,6 +27,7 @@ npc_skorn_whitecloud
 EndContentData */
 
 #include "precompiled.h"
+#include "escort_ai.h"
 
 /*######
 # npc_kyle_the_frenzied
@@ -177,6 +178,62 @@ bool GossipSelect_npc_skorn_whitecloud(Player* pPlayer, Creature* pCreature, uin
     return true;
 }
 
+/*######
+# npc_plains_vision
+######*/
+enum
+{
+   QUEST_RITE_OF_VISION	= 772,
+   NPC_PLAIN_VISION		= 2983
+};
+
+struct MANGOS_DLL_DECL npc_plains_visionAI : public npc_escortAI
+{
+   npc_plains_visionAI(Creature* pCreature) : npc_escortAI(pCreature)
+   {
+       Start(false, false);
+       Reset();
+   }
+
+	uint64 playerGUID;
+
+	void Reset()
+	{
+		playerGUID = 0;
+	}
+
+   void MoveInLineOfSight(Unit* pWho)
+   {
+       if ((playerGUID==0) && pWho->GetTypeId() == TYPEID_PLAYER)
+		{
+			if (((Player*)pWho)->GetQuestStatus(QUEST_RITE_OF_VISION) == QUEST_STATUS_INCOMPLETE)
+				playerGUID = ((Player*)pWho)->GetGUID();
+		}
+	}
+
+
+   void WaypointReached(uint32 uiPointId)
+   {
+       switch(uiPointId)
+       {
+			case 50:
+				if (Unit* pUnit = m_creature->GetMap()->GetCreature(playerGUID))
+				{
+					if(pUnit->GetTypeId() == TYPEID_PLAYER)
+						((Player*)pUnit)->GroupEventHappens(QUEST_RITE_OF_VISION,m_creature);
+				}
+				m_creature->SetDeathState(JUST_DIED);
+				m_creature->RemoveCorpse();
+               break;
+       }
+   }
+};
+
+CreatureAI* GetAI_npc_plains_vision(Creature* pCreature)
+{
+   return new npc_plains_visionAI(pCreature);
+}
+
 void AddSC_mulgore()
 {
     Script *newscript;
@@ -191,4 +248,9 @@ void AddSC_mulgore()
     newscript->pGossipHello = &GossipHello_npc_skorn_whitecloud;
     newscript->pGossipSelect = &GossipSelect_npc_skorn_whitecloud;
     newscript->RegisterSelf();
+	
+    newscript = new Script;
+	newscript->Name = "npc_plains_vision";
+	newscript->GetAI = &GetAI_npc_plains_vision;
+	newscript->RegisterSelf();
 }

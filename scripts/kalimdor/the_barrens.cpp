@@ -467,7 +467,6 @@ CreatureAI* GetAI_npc_twiggy_flathead(Creature* pCreature)
 
 bool AreaTrigger_at_twiggy_flathead(Player* pPlayer, AreaTriggerEntry const* pAt)
 {
-
     if (pPlayer->GetQuestStatus(QUEST_AFFRAY) == QUEST_STATUS_FAILED)
     {
         //we don't want player to start event if failed already.
@@ -475,6 +474,7 @@ bool AreaTrigger_at_twiggy_flathead(Player* pPlayer, AreaTriggerEntry const* pAt
     }
     else if (!pPlayer->isDead() && pPlayer->GetQuestStatus(QUEST_AFFRAY) == QUEST_STATUS_INCOMPLETE)
     {
+    
         Creature* pCreature = GetClosestCreatureWithEntry(pPlayer, NPC_TWIGGY, 30.0f);
 
         if (!pCreature)

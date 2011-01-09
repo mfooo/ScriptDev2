@@ -81,7 +81,7 @@ bool GOGossipHello_go_icecrown_teleporter(Player *pPlayer, GameObject* pGo)
     return true;
 }
 
-bool GOHello_go_plague_sigil(Player *player, GameObject* pGo)
+bool GOUse_go_plague_sigil(Player *player, GameObject* pGo)
 {
     instance_icecrown_spire* pInstance = (instance_icecrown_spire*)pGo->GetInstanceData();
     if(!pInstance) return false;
@@ -96,7 +96,7 @@ bool GOHello_go_plague_sigil(Player *player, GameObject* pGo)
     return true;
 }
 
-bool GOHello_go_bloodwing_sigil(Player *player, GameObject* pGo)
+bool GOUse_go_bloodwing_sigil(Player *player, GameObject* pGo)
 {
     instance_icecrown_spire* pInstance = (instance_icecrown_spire*)pGo->GetInstanceData();
     if(!pInstance) return false;
@@ -107,7 +107,7 @@ bool GOHello_go_bloodwing_sigil(Player *player, GameObject* pGo)
     return true;
 }
 
-bool GOHello_go_frostwing_sigil(Player *player, GameObject* pGo)
+bool GOUse_go_frostwing_sigil(Player *player, GameObject* pGo)
 {
     instance_icecrown_spire* pInstance = (instance_icecrown_spire*)pGo->GetInstanceData();
     if(!pInstance) return false;
@@ -131,16 +131,16 @@ void AddSC_icecrown_teleporter()
 
     newscript = new Script;
     newscript->Name = "go_plague_sigil";
-    newscript->pGOUse  = &GOHello_go_plague_sigil;
+    newscript->pGOUse  = &GOUse_go_plague_sigil;
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_bloodwing_sigil";
-    newscript->pGOUse  = &GOHello_go_bloodwing_sigil;
+    newscript->pGOUse  = &GOUse_go_bloodwing_sigil;
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_frostwing_sigil";
-    newscript->pGOUse  = &GOHello_go_frostwing_sigil;
+    newscript->pGOUse  = &GOUse_go_frostwing_sigil;
     newscript->RegisterSelf();
 }

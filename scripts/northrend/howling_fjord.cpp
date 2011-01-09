@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Howling_Fjord
 SD%Complete: ?
-SDComment: Quest support: 11221, 11483, 11300, 11464
+SDComment: Quest support: 11221, 11483, 11464, 11300, 11464
 SDCategory: Howling Fjord
 EndScriptData */
 
@@ -144,9 +144,9 @@ CreatureAI* GetAI_npc_daegarn(Creature* pCreature)
     return new npc_daegarnAI(pCreature);
 }
 
-/*######
-## npc_deathstalker_razael - TODO, can be moved to database
-######*/
+/*#######################
+## Deathstalker Razael ##
+#######################*/
 
 #define GOSSIP_ITEM_DEATHSTALKER_RAZAEL "High Executor Anselm requests your report."
 
@@ -357,19 +357,19 @@ bool GossipSelect_npc_mcgoyver(Player* pPlayer, Creature* pCreature, uint32 uiSe
 
 enum
 {
-    QUEST_GAMBLING_DEBT         = 11464,
+   QUEST_GAMBLING_DEBT         = 11464,
 
-    SAY_AGGRO                   = -1000603,
-    SAY_BEATEN                  = -1000604,
+   SAY_AGGRO                   = -1000603,
+   SAY_BEATEN                  = -1000604,
 
-    GOSSIP_ITEM_GAMBLING_DEBT   = -3000101,
-    GOSSIP_ITEM_PAYING          = -3000102,
+   GOSSIP_ITEM_GAMBLING_DEBT   = -3000101,
+   GOSSIP_ITEM_PAYING          = -3000102,
 
-    SPELL_BLAST_WAVE            = 15091,
-    SPELL_SCORCH                = 50183,
+   SPELL_BLAST_WAVE            = 15091,
+   SPELL_SCORCH                = 50183,
 
-    ITEM_HARRY_DEBT             = 34115,
-    FACTION_HOSTILE_SH          = 90,                       // guessed, possibly not correct
+   ITEM_HARRY_DEBT             = 34115,
+   FACTION_HOSTILE_SH          = 90,                       // guessed, possibly not correct
 };
 
 struct MANGOS_DLL_DECL npc_silvermoon_harryAI : public ScriptedAI
@@ -388,9 +388,9 @@ struct MANGOS_DLL_DECL npc_silvermoon_harryAI : public ScriptedAI
         // timers guessed
         m_uiScorchTimer = 5*IN_MILLISECONDS;
         m_uiBlastWaveTimer = 7*IN_MILLISECONDS;
-
+ 
         m_uiResetBeatenTimer = MINUTE*IN_MILLISECONDS;
-
+ 
         if (m_creature->getFaction() != m_creature->GetCreatureInfo()->faction_A)
             m_creature->setFaction(m_creature->GetCreatureInfo()->faction_A);
     }
@@ -417,10 +417,10 @@ struct MANGOS_DLL_DECL npc_silvermoon_harryAI : public ScriptedAI
                     m_creature->RemoveAllAuras();
                     m_creature->DeleteThreatList();
                     m_creature->CombatStop(true);
-
+ 
                     if (m_creature->getFaction() != m_creature->GetCreatureInfo()->faction_A)
                         m_creature->setFaction(m_creature->GetCreatureInfo()->faction_A);
-
+ 
                     DoScriptText(SAY_BEATEN, m_creature);
                     m_bHarryBeaten = true;
                 }
@@ -522,7 +522,7 @@ bool GossipSelect_npc_silvermoon_harry(Player* pPlayer, Creature* pCreature, uin
             break;
     }
 
-    return true;
+   return true;
 }
 
 void AddSC_howling_fjord()

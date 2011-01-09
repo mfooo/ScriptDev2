@@ -49,12 +49,79 @@ enum
 
     SPELL_GRIP_OF_SLADRAN     = 55093,
     SPELL_GRIP_OF_SLADRAN_H   = 61474,
+    SPELL_SNAKE_WRAP          = 55126,
 
     NPC_SLADRAN_CONSTRICTOR   = 29713,
     NPC_SLADRAN_VIPER         = 29680,
     NPC_SNAKE_WRAP            = 29742,
     NPC_SLADRAN_SUMMON_TARGET = 29682
 };
+
+/*######
+## mob_sladran_constrictor
+######*/
+struct MANGOS_DLL_DECL mob_sladran_constrictorAI : public ScriptedAI
+{
+    mob_sladran_constrictorAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        Reset();
+    }
+
+    uint32 m_uiGripOfSladranTimer;
+    uint32 m_uiCheckTimer;
+
+    void Reset()
+    {
+        m_uiGripOfSladranTimer = 2000;
+        m_uiCheckTimer = 1000;
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+            return;
+
+        if (m_uiGripOfSladranTimer < uiDiff)
+        {
+            if (Unit* pVictim = m_creature->getVictim())
+            {
+                if (!pVictim->HasAura(SPELL_SNAKE_WRAP))
+                    DoCastSpellIfCan(pVictim, SPELL_GRIP_OF_SLADRAN_H);
+            }
+            m_uiGripOfSladranTimer = 2000;
+        }
+        else
+            m_uiGripOfSladranTimer -= uiDiff;
+
+        if (m_uiCheckTimer < uiDiff)
+        {
+            if (Unit* pVictim = m_creature->getVictim())
+            {
+                if (!pVictim->HasAura(SPELL_SNAKE_WRAP) && pVictim->HasAura(SPELL_GRIP_OF_SLADRAN_H))
+                {
+                    if (SpellAuraHolder* pAura = pVictim->GetSpellAuraHolder(SPELL_GRIP_OF_SLADRAN_H))
+                    {
+                        if (pAura->GetStackAmount() >= 5)
+                        {
+                            pVictim->CastSpell(pVictim, SPELL_SNAKE_WRAP, true);
+                            pVictim->RemoveAurasDueToSpell(SPELL_GRIP_OF_SLADRAN_H);
+                        }
+                    }
+                }
+            }
+            m_uiCheckTimer = 1000;
+        }
+        else
+            m_uiCheckTimer -= uiDiff;
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_mob_sladran_constrictor(Creature* pCreature)
+{
+    return new mob_sladran_constrictorAI(pCreature);
+}
 
 /*######
 ## mob_sladran_summon_target
@@ -242,5 +309,10 @@ void AddSC_boss_sladran()
     newscript = new Script;
     newscript->Name = "mob_sladran_summon_target";
     newscript->GetAI = &GetAI_mob_sladran_summon_target;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_sladran_constrictor";
+    newscript->GetAI = &GetAI_mob_sladran_constrictor;
     newscript->RegisterSelf();
 }

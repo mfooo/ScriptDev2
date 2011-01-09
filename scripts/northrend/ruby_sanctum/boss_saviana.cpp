@@ -22,7 +22,7 @@ SDCategory: ruby_sanctum
 EndScriptData */
 
 #include "precompiled.h"
-#include "ruby_sanctum.h"
+#include "def_ruby_sanctum.h"
 
 enum BossSpells
 {

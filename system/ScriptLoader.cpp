@@ -6,16 +6,45 @@
 
 //battlegrounds
 extern void AddSC_battleground();
+extern void AddSC_boss_balinda();                       // alterac valley
+extern void AddSC_boss_drekthar();
+extern void AddSC_boss_galvangar();
+extern void AddSC_boss_vanndar();
+
+//Guards
+extern void AddSC_ancient_of_war();
+extern void AddSC_archbishop_benedictus();
+extern void AddSC_g_marcus_jonathan();
+extern void AddSC_high_fire_mage();
+extern void AddSC_high_sorcerer_andromath();
+extern void AddSC_highlord_bolvar_fordragon();
+extern void AddSC_city_officer();
+extern void AddSC_overlord_saurfang();
 
 //custom
-extern void AddSC_npc_arena_honor();
-extern void AddSC_mob_teleguy();
+extern void AddSC_custom_gameobjects();
+extern void AddSC_custom_npc_tokenvendor();
+extern void AddSC_custom_npc_titlemaster();
+extern void AddSC_custom_npc_teleportmaster();
+extern void AddSC_custom_npc_spellmaster();
+extern void AddSC_custom_npc_resetlevel();
+extern void AddSC_custom_npc_renamecharacter();
+extern void AddSC_custom_npc_professionmaster();
+//extern void AddSC_custom_npc_news();
+extern void AddSC_custom_npc_guildmaster();
+extern void AddSC_custom_npc_buffmaster();
+extern void AddSC_custom_items();
+extern void AddSC_custom_script_training_dummy();
+extern void AddSC_custom_npc_resetinstance();
 
 //examples
 extern void AddSC_example_creature();
 extern void AddSC_example_escort();
 extern void AddSC_example_gossip_codebox();
 extern void AddSC_example_misc();
+
+//pets
+extern void AddSC_pets();
 
 //world
 extern void AddSC_areatrigger_scripts();
@@ -142,7 +171,11 @@ extern void AddSC_stratholme();
 extern void AddSC_instance_sunken_temple();                 //sunken_temple
 extern void AddSC_sunken_temple();
 extern void AddSC_boss_brutallus();                         //sunwell_plateau
+extern void AddSC_boss_eredar_twins();
+extern void AddSC_boss_felmyst();
 extern void AddSC_boss_kalecgos();
+extern void AddSC_boss_kiljaeden();
+extern void AddSC_boss_muru_entropius();
 extern void AddSC_instance_sunwell_plateau();
 extern void AddSC_boss_archaedas();                         //uldaman
 extern void AddSC_instance_uldaman();
@@ -238,7 +271,6 @@ extern void AddSC_instance_temple_of_ahnqiraj();
 extern void AddSC_instance_wailing_caverns();               // Wailing Caverns
 extern void AddSC_zulfarrak();                              //zulfarrak
 extern void AddSC_instance_zulfarrak();
-
 // culling of stratholme
 extern void AddSC_boss_lord_epoch();
 extern void AddSC_boss_malganis();
@@ -334,6 +366,9 @@ extern void AddSC_boss_razuvious();
 extern void AddSC_boss_sapphiron();
 extern void AddSC_instance_naxxramas();
 
+extern void AddSC_instance_eye_of_eternity();                //eye_of_eternity
+extern void AddSC_boss_malygos();
+
 extern void AddSC_boss_anomalus();                          //nexus
 extern void AddSC_boss_keristrasza();
 extern void AddSC_boss_ormorok();
@@ -341,14 +376,11 @@ extern void AddSC_boss_telestra();
 extern void AddSC_instance_nexus();
 
 extern void AddSC_oculus();                                 //Oculus
-extern void AddSC_instance_oculus();
-extern void AddSC_boss_drakos();
-extern void AddSC_boss_varos();
-extern void AddSC_boss_urom();
+extern void AddSC_boss_drakos(); 
 extern void AddSC_boss_eregos();
-
-extern void AddSC_boss_malygos();                           //eye of eternity
-extern void AddSC_instance_eye_of_eternity();
+extern void AddSC_boss_urom();
+extern void AddSC_boss_varos();
+extern void AddSC_instance_oculus();
 
 extern void AddSC_boss_sartharion();                        //obsidian_sanctum
 extern void AddSC_instance_obsidian_sanctum();
@@ -532,16 +564,45 @@ void AddScripts()
 {
     //battlegrounds
     AddSC_battleground();
+    AddSC_boss_balinda();                       // alterac valley
+    AddSC_boss_drekthar();
+    AddSC_boss_galvangar();
+    AddSC_boss_vanndar();
 
     //custom
-    AddSC_npc_arena_honor();
-    AddSC_mob_teleguy();
+    AddSC_custom_gameobjects();
+    AddSC_custom_npc_tokenvendor();
+    AddSC_custom_npc_titlemaster();
+    AddSC_custom_npc_teleportmaster();
+    AddSC_custom_npc_spellmaster();
+    AddSC_custom_npc_resetlevel();
+    AddSC_custom_npc_renamecharacter();
+    AddSC_custom_npc_professionmaster();
+    //AddSC_custom_npc_news();
+    AddSC_custom_npc_guildmaster();
+    AddSC_custom_npc_buffmaster();
+    AddSC_custom_items();
+    AddSC_custom_script_training_dummy();
+    AddSC_custom_npc_resetinstance();
+
+	//Guards
+    AddSC_ancient_of_war();
+    AddSC_archbishop_benedictus();
+    AddSC_g_marcus_jonathan();
+    AddSC_high_fire_mage();
+    AddSC_high_sorcerer_andromath();
+    AddSC_highlord_bolvar_fordragon();
+    AddSC_city_officer();
+    AddSC_overlord_saurfang();
 
     //examples
     AddSC_example_creature();
     AddSC_example_escort();
     AddSC_example_gossip_codebox();
     AddSC_example_misc();
+
+    //pets
+    AddSC_pets();
 
     //world
     AddSC_areatrigger_scripts();
@@ -667,8 +728,12 @@ void AddScripts()
     AddSC_stratholme();
     AddSC_instance_sunken_temple();                         //sunken_temple
     AddSC_sunken_temple();
-    AddSC_boss_brutallus();                                 //sunwell_plateau
+    AddSC_boss_brutallus();                         //sunwell_plateau
+    AddSC_boss_eredar_twins();
+    AddSC_boss_felmyst();
     AddSC_boss_kalecgos();
+    AddSC_boss_kiljaeden();
+    AddSC_boss_muru_entropius();
     AddSC_instance_sunwell_plateau();
     AddSC_boss_archaedas();                                 //uldaman
     AddSC_instance_uldaman();
@@ -763,7 +828,7 @@ void AddScripts()
     AddSC_instance_temple_of_ahnqiraj();
     AddSC_instance_wailing_caverns();                       // Wailing Caverns
     AddSC_zulfarrak();                                      //zulfarrak
-    AddSC_instance_zulfarrak();
+	AddSC_instance_zulfarrak();
 
     AddSC_ashenvale();
     AddSC_azshara();
@@ -847,6 +912,9 @@ void AddScripts()
     AddSC_boss_razuvious();
     AddSC_boss_sapphiron();
     AddSC_instance_naxxramas();
+	
+    AddSC_instance_eye_of_eternity();                //eye_of_eternity
+    AddSC_boss_malygos();
 
     AddSC_boss_anomalus();                                  //nexus
     AddSC_boss_keristrasza();
@@ -854,15 +922,12 @@ void AddScripts()
     AddSC_boss_telestra();
     AddSC_instance_nexus();
 
-    AddSC_oculus();                                         //Oculus
-    AddSC_instance_oculus();
-    AddSC_boss_drakos();
-    AddSC_boss_varos();
-    AddSC_boss_urom();
+    AddSC_oculus();                                         //Oculus	
+    AddSC_boss_drakos(); 
     AddSC_boss_eregos();
-
-    AddSC_boss_malygos();                                   //eye of eternity
-    AddSC_instance_eye_of_eternity();
+    AddSC_boss_urom();
+    AddSC_boss_varos();
+    AddSC_instance_oculus();
 
     AddSC_boss_sartharion();                                //obsidian_sanctum
     AddSC_instance_obsidian_sanctum();

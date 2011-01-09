@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; either version 2 of the License, or
@@ -2106,7 +2106,7 @@ struct MANGOS_DLL_DECL mob_magnetic_coreAI : public ScriptedAI
 };
 
 // Red button -> used to start the hard mode
-bool GOHello_go_red_button(Player* pPlayer, GameObject* pGo)
+bool GOUse_go_red_button(Player* pPlayer, GameObject* pGo)
 {
     ScriptedInstance* m_pInstance = (ScriptedInstance*)pGo->GetInstanceData();
 
@@ -2260,6 +2260,6 @@ void AddSC_boss_mimiron()
 
     newscript = new Script;
     newscript->Name = "go_red_button";
-    newscript->pGOUse = &GOHello_go_red_button;
+    newscript->pGOUse = &GOUse_go_red_button;
     newscript->RegisterSelf();
 }

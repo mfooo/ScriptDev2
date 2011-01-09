@@ -60,6 +60,7 @@ struct MANGOS_DLL_DECL boss_lavanthorAI : public ScriptedAI
         m_uiFlameBreath_Timer = urand(15000, 16000);
         m_uiFirebolt_Timer = urand(10000, 11000);
         MovementStarted = false;
+           
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }

@@ -435,104 +435,166 @@ CreatureAI* GetAI_npc_apprentice_mirvedaAI(Creature* pCreature)
     return new npc_apprentice_mirvedaAI (pCreature);
 }
 
+
 /*######
 ## npc_infused_crystal
 ######*/
 
 enum
 {
-    NPC_ENRAGED_WRATH           = 17086,
-    QUEST_POWERING_OUR_DEFENSES = 8490,
-    INFUSED_CRYSTAL_EMOTE       = -1999811
+   PLACE_INFUSED_CRYSTAL_SPELL  = 28247            // first part of fixing this quest
 };
 
-float fEnragedWrathPosition[3][4] =
-{
-    {8259.375977f, -7202.288574f, 139.287430f, 5.0f},
-    {8255.425781f, -7222.026367f, 139.607162f, 5.0f},
-    {8267.902344f, -7193.510742f, 139.430374f, 5.0f}
-};
+#define ADD_X1 8259.375977f
+#define ADD_Y1 -7202.288574f
+#define ADD_Z1 139.287430f
+#define ADD_X2 8255.425781f
+#define ADD_Y2 -7222.026367f
+#define ADD_Z2 139.607162f
+#define ADD_X3 8267.902344f
+#define ADD_Y3 -7193.510742f
+#define ADD_Z3 139.430374f
 
 struct MANGOS_DLL_DECL npc_infused_crystalAI : public ScriptedAI
 {
-    npc_infused_crystalAI(Creature* pCreature) : ScriptedAI(pCreature)
-    {
-        SetCombatMovement(false);
-        Reset();
+    npc_infused_crystalAI(Creature* pCreature) : ScriptedAI(pCreature) 
+    { 
+       Reset(); 
+	   SetCombatMovement(false);
     }
     
-    uint32 m_uiQuestTimer;
-    uint32 m_uiSpawnTimer;
-    uint64 m_uiPlayerGUID;
+    uint32 QuestTimer;
+    uint32 SpawnTimer;
+    uint64 PlayerGUID;
 
-    bool bCompleted;
+    bool Completed;
             
     void Reset()
     {
-        m_uiQuestTimer = 60000;
-        m_uiSpawnTimer  = 1000;
-        m_uiPlayerGUID = 0;
-        bCompleted = false;
+        QuestTimer = 60000;
+        SpawnTimer  = 1000;
+        PlayerGUID = 0;
+        Completed = false;
     }
 
-    void MoveInLineOfSight(Unit* pWho)
+	void MoveInLineOfSight(Unit* pUnit)
+	{
+		if ( pUnit && pUnit->GetTypeId() != TYPEID_PLAYER )
+			return;
+
+		if ( ((Player*)pUnit)->GetQuestStatus(8490) != QUEST_STATUS_INCOMPLETE )
+			return;
+
+		PlayerGUID = ((Player*)pUnit)->GetGUID();
+	}
+
+	void Aggro(Unit* pUnit) { }
+
+    void JustDied(Unit* pUnit) 
     {
-        if (pWho->GetTypeId() != TYPEID_PLAYER)
-            return;
-        Player* pPlayer = (Player*)pWho;
-            
-        if (pPlayer->GetQuestStatus(QUEST_POWERING_OUR_DEFENSES) != QUEST_STATUS_INCOMPLETE)
-            return;
-            
-        m_uiPlayerGUID = pPlayer->GetGUID();
+        if (PlayerGUID)
+		{
+			Player* pPlayer = m_creature->GetMap()->GetPlayer(PlayerGUID);
+			if (pPlayer && ((Player*)pPlayer)->GetQuestStatus(8490) == QUEST_STATUS_INCOMPLETE)
+				((Player*)pPlayer)->FailQuest(8490);
+		}
     }
 
-    void Aggro(Unit* pWho){}
-
-    void JustDied(Unit* pWho) 
-    {
-        if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID))
-            if (pPlayer->GetQuestStatus(QUEST_POWERING_OUR_DEFENSES) == QUEST_STATUS_INCOMPLETE)
-                pPlayer->FailQuest(QUEST_POWERING_OUR_DEFENSES);
-    }
-
-    void UpdateAI(const uint32 uiDiff)
+    void UpdateAI(const uint32 diff)
     {    
-        if (bCompleted) 
+        if (Completed) 
             return;
 
-        if (m_uiSpawnTimer < uiDiff)
+        if (SpawnTimer < diff)
         {
-            for (uint8 i = 0; i < 3; ++i)
-            {
-                if (Creature* pEnragedWrath = m_creature->SummonCreature(NPC_ENRAGED_WRATH, fEnragedWrathPosition[i][0], fEnragedWrathPosition[i][1], fEnragedWrathPosition[i][2], fEnragedWrathPosition[i][3], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000))
-                {
-                    pEnragedWrath->AI()->AttackStart(m_creature);
-                }
-            }
-            m_uiSpawnTimer = 40000;
-        }
-        else
-            m_uiSpawnTimer -= uiDiff;
+            Creature* Spawned = NULL;
+            Creature* Spawned2 = NULL;
+            Creature* Spawned3 = NULL;
 
-        if (m_uiQuestTimer < uiDiff)
-        {
-            if(Player* pPlayer = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID))
+            Spawned = m_creature->SummonCreature(17086, ADD_X1, ADD_Y1, ADD_Z1, 5.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+            if (Spawned)
             {
-                pPlayer->KilledMonsterCredit(m_creature->GetEntry());
-                DoScriptText(INFUSED_CRYSTAL_EMOTE , m_creature);
-                m_creature->ForcedDespawn(5000);
+                Spawned->AI()->AttackStart(m_creature);
+                Spawned->setFaction(168);
+                Spawned->MonsterTextEmote("becomes enraged!", NULL);
             }
-            bCompleted = true;          
-        }
-        else
-            m_uiQuestTimer -= uiDiff;
+
+            Spawned2 = m_creature->SummonCreature(17086, ADD_X2, ADD_Y2, ADD_Z2, 5.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+            if (Spawned2)
+            {
+                Spawned2->AI()->AttackStart(m_creature);
+                Spawned2->setFaction(168);
+                Spawned2->MonsterTextEmote("becomes enraged!", NULL);
+            }
+
+            Spawned3 = m_creature->SummonCreature(17086, ADD_X3, ADD_Y3, ADD_Z3, 5.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+            if (Spawned)
+            {
+                Spawned3->AI()->AttackStart(m_creature);
+                Spawned3->setFaction(168);
+                Spawned3->MonsterTextEmote("becomes enraged!", NULL);
+            }
+
+			SpawnTimer = 40000;
+
+        }else SpawnTimer -= diff;
+
+        if (QuestTimer < diff)
+        {
+			if(PlayerGUID)
+			{
+				Player* pPlayer = m_creature->GetMap()->GetPlayer(PlayerGUID);
+				if (pPlayer)
+                {
+					((Player*)pPlayer)->KilledMonsterCredit(16364);
+					DoCastSpellIfCan(m_creature, PLACE_INFUSED_CRYSTAL_SPELL);
+                    m_creature->MonsterTextEmote("releases the last of its energies into nearby runestone, succesfully reactivating it.", NULL);
+					m_creature->RemoveFromWorld();
+				}
+			}
+            Completed = true;
+
+        }else QuestTimer -= diff;
     }
 };
 
 CreatureAI* GetAI_npc_infused_crystal(Creature* pCreature)
 {
     return new npc_infused_crystalAI (pCreature);
+}
+
+/*######
+## npc_mana_wyrm
+######*/
+
+#define ARCANE_TORRENT_MANA			28730
+#define ARCANE_TORRENT_ENERGY		25046
+#define ARCANE_TORRENT_RUNIC		50613
+
+struct MANGOS_DLL_DECL npc_mana_wyrmAI : public ScriptedAI
+{
+   npc_mana_wyrmAI(Creature* pCreature) : ScriptedAI(pCreature)
+   {
+		Reset();
+   }
+
+   void Reset() {}
+
+   void SpellHit(Unit *caster, const SpellEntry *spell)
+   {
+       if ( caster->GetTypeId() == TYPEID_PLAYER && m_creature->isAlive() && ( (spell->Id == ARCANE_TORRENT_MANA) || (spell->Id == ARCANE_TORRENT_ENERGY) || (spell->Id == ARCANE_TORRENT_RUNIC) ) )
+       {
+           if(((Player*)caster)->GetQuestStatus(8346) == QUEST_STATUS_INCOMPLETE)
+           {
+               ((Player*)caster)->KilledMonsterCredit(15468);
+           }
+       }
+   }
+};
+
+CreatureAI* GetAI_npc_mana_wyrm(Creature* pCreature)
+{
+   return new npc_mana_wyrmAI(pCreature);
 }
 
 void AddSC_eversong_woods()
@@ -566,5 +628,10 @@ void AddSC_eversong_woods()
     pNewScript = new Script;
     pNewScript->Name= "npc_infused_crystal";
     pNewScript->GetAI = &GetAI_npc_infused_crystal;
+    pNewScript->RegisterSelf();
+    
+    pNewScript = new Script;
+    pNewScript->Name = "npc_mana_wyrm";
+    pNewScript->GetAI = &GetAI_npc_mana_wyrm;
     pNewScript->RegisterSelf();
 }

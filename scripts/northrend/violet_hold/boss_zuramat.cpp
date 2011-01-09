@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: boss_zuramat
 SDAuthor: ckegg
-SD%Complete: 60%
+SD%Complete: 0
 SDComment: 
 SDCategory: The Violet Hold
 EndScriptData */
@@ -86,12 +86,9 @@ struct MANGOS_DLL_DECL boss_zuramatAI : public ScriptedAI
             m_pInstance->SetData(TYPE_ZURAMAT, FAIL);
             m_pInstance->SetData(TYPE_EVENT, FAIL);
             m_pInstance->SetData(TYPE_RIFT, FAIL);
-
-            if(m_pInstance->GetData(TYPE_PORTAL6) == IN_PROGRESS) 
-                m_pInstance->SetData(TYPE_PORTAL6, NOT_STARTED);
-            else 
-                m_pInstance->SetData(TYPE_PORTAL12, NOT_STARTED);
-        }
+            if(m_pInstance->GetData(TYPE_PORTAL6) == IN_PROGRESS) {m_pInstance->SetData(TYPE_PORTAL6, NOT_STARTED);}
+            else {m_pInstance->SetData(TYPE_PORTAL12, NOT_STARTED);}
+            }
     }
 
     void Aggro(Unit* pWho)
@@ -242,12 +239,12 @@ struct MANGOS_DLL_DECL mob_zuramat_sentryAI : public ScriptedAI
     ScriptedInstance *m_pInstance;
     bool m_bIsRegularMode;
     uint32 m_uiShadowBoltVolley_Timer;
-
+   
     void Reset()
     {
         m_uiShadowBoltVolley_Timer = 3000;
-//        DoCast(m_creature, m_bIsRegularMode ? SPELL_VOID_SENTRY_AURA_H : SPELL_VOID_SENTRY_AURA); 
-//        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);*/ 
+      //   DoCast(m_creature, m_bIsRegularMode ? SPELL_VOID_SENTRY_AURA_H : SPELL_VOID_SENTRY_AURA); 
+     //   m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);*/ 
         DoCast(m_creature, m_bIsRegularMode ? SPELL_SHADOW_BOLT_VOLLEY : SPELL_SHADOW_BOLT_VOLLEY_H);
     }
 
@@ -255,6 +252,7 @@ struct MANGOS_DLL_DECL mob_zuramat_sentryAI : public ScriptedAI
     {
         if(!killer->HasAura(SPELL_VOID_SHIFTED))
             damage=0;
+           
     }
 
     void UpdateAI(const uint32 uiDiff) 
@@ -266,7 +264,7 @@ struct MANGOS_DLL_DECL mob_zuramat_sentryAI : public ScriptedAI
         }
         else m_uiShadowBoltVolley_Timer -= uiDiff;
     }
-
+    
 };
 
 CreatureAI* GetAI_boss_zuramat(Creature* pCreature)

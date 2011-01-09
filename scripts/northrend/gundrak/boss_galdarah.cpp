@@ -23,6 +23,7 @@ EndScriptData */
 
 #include "precompiled.h"
 #include "gundrak.h"
+#include "Vehicle.h"
 
 enum
 {
@@ -62,6 +63,8 @@ enum
     SPELL_IMPALING_CHARGE_H    = 59827,
     SPELL_STOMP                = 55292,
     SPELL_STOMP_H              = 59826,
+
+    EQUIP_MAIN                 = 30440
 };
 
 /*######
@@ -80,10 +83,12 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
     instance_gundrak* m_pInstance;
     bool m_bIsRegularMode;
     bool m_bIsTrollPhase;
+    bool m_bIsImpaled;
 
     uint32 m_uiStampedeTimer;
     uint32 m_uiPhaseChangeTimer;
     uint32 m_uiSpecialAbilityTimer;                         // Impaling Charge and Whirling Slash
+    uint32 m_uiImpaleEndTimer;
     uint32 m_uiPunctureTimer;
     uint32 m_uiStompTimer;
     uint32 m_uiEnrageTimer;
@@ -95,9 +100,12 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
 
         m_uiStampedeTimer       = 10000;
         m_uiSpecialAbilityTimer = 12000;
+        m_uiImpaleEndTimer      = 5000;
+        m_bIsImpaled            = false;
         m_uiPunctureTimer       = 25000;
         m_uiPhaseChangeTimer    = 7000;
         m_uiAbilityCount        = 0;
+        SetEquipmentSlots(false, EQUIP_MAIN);
     }
 
     void Aggro(Unit* pWho)
@@ -136,8 +144,16 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
     {
         if (pSummoned->GetEntry() == NPC_RHINO_SPIRIT)
         {
-            if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1))
+            Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1);
+
+            if (!pTarget)
+                pTarget = m_creature->getVictim();
+
+            if (pTarget)
+            {
                 pSummoned->CastSpell(pTarget, m_bIsRegularMode ? SPELL_STAMPEDE_RHINO : SPELL_STAMPEDE_RHINO_H, false);
+                pSummoned->AI()->AttackStart(pTarget);
+            }
         }
     }
 
@@ -149,7 +165,10 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
         m_bIsTrollPhase = !m_bIsTrollPhase;
 
         if (m_bIsTrollPhase)
+        {
             DoCastSpellIfCan(m_creature, SPELL_TROLL_TRANSFORM);
+            SetEquipmentSlots(false, EQUIP_MAIN);
+        }
         else
         {
             DoScriptText(urand(0, 1) ? SAY_TRANSFORM_1 : SAY_TRANSFORM_2, m_creature);
@@ -169,6 +188,18 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
+        if (m_bIsImpaled)
+        {
+            if (m_uiImpaleEndTimer < uiDiff)
+            {
+                if (m_creature->GetVehicleKit())
+                    m_creature->GetVehicleKit()->RemoveAllPassengers();
+                m_bIsImpaled = false;
+            }
+            else
+                m_uiImpaleEndTimer -= uiDiff;
+        }
+        
         if (m_uiAbilityCount == 2)
         {
             if (m_uiPhaseChangeTimer < uiDiff)
@@ -204,9 +235,13 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
 
             if (m_uiSpecialAbilityTimer < uiDiff)
             {
-                if (DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_WHIRLING_SLASH : SPELL_WHIRLING_SLASH_H) == CAST_OK)
-                    m_uiSpecialAbilityTimer = 12000;
+                if (SpellEntry* pTempSpell = (SpellEntry*)GetSpellStore()->LookupEntry(m_bIsRegularMode ? SPELL_WHIRLING_SLASH : SPELL_WHIRLING_SLASH_H))
+                {
+                    pTempSpell->Effect[2] = 0;
+                    m_creature->CastSpell(m_creature->getVictim(), pTempSpell, false);
+                }
 
+                m_uiSpecialAbilityTimer = 12000;
                 ++m_uiAbilityCount;
             }
             else
@@ -235,10 +270,16 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
             {
                 Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1);
 
-                if (DoCastSpellIfCan(pTarget ? pTarget : m_creature->getVictim(), m_bIsRegularMode ? SPELL_IMPALING_CHARGE : SPELL_IMPALING_CHARGE_H) == CAST_OK)
+                if (!pTarget)
+                    pTarget = m_creature->getVictim();
+
+                if (DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_IMPALING_CHARGE : SPELL_IMPALING_CHARGE_H) == CAST_OK)
                 {
                     DoScriptText(EMOTE_IMPALED, m_creature, pTarget);
                     m_uiSpecialAbilityTimer = 12000;
+                    pTarget->EnterVehicle(m_creature->GetVehicleKit(), 0);
+                    m_uiImpaleEndTimer = 5000;
+                    m_bIsImpaled = true;
 
                     ++m_uiAbilityCount;
                 }

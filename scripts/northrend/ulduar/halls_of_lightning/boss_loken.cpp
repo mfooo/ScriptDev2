@@ -144,7 +144,24 @@ struct MANGOS_DLL_DECL boss_lokenAI : public ScriptedAI
                             if (m_fDist <= 1.0f) // Less than 1 yard
                                 dmg = (m_bIsRegularMode ? 800 : 850); // need to correct damage
                             else // Further from 1 yard
-                                dmg = round((m_bIsRegularMode ? 200 : 250) * m_fDist) + (m_bIsRegularMode ? 800 : 850); // need to correct damage
+							{
+                                float t;
+								float n = ((m_bIsRegularMode ? 200 : 250) * m_fDist) + (m_bIsRegularMode ? 800 : 850);
+								t=n-floor(n);
+								if (t>=0.5)
+								{
+									n*=10;
+									ceil(n);
+									n/=10;
+								}
+								else
+								{
+									n*=10;
+									floor(n);
+									n/=10;
+								}
+								dmg = n; // need to correct damage
+							}
 
                             m_creature->CastCustomSpell(i->getSource(), (m_bIsRegularMode ? 52942 : 59837), &dmg, 0, 0, false);
                         }

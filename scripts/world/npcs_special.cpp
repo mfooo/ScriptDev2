@@ -2251,57 +2251,57 @@ CreatureAI* GetAI_npc_risen_ally(Creature* pCreature)
 
 struct MANGOS_DLL_DECL npc_explosive_decoyAI : public ScriptedAI
 {
-    npc_explosive_decoyAI(Creature *pCreature) : ScriptedAI(pCreature)
-    {
-        Reset();
-    }
+   npc_explosive_decoyAI(Creature *pCreature) : ScriptedAI(pCreature)
+   {
+       Reset();
+   }
 
-    Player* p_owner;
+   Player* p_owner;
 
-    void Reset()
-    {
-        p_owner = NULL;
-        SetCombatMovement(false);
-    }
+   void Reset()
+   {
+       p_owner = NULL;
+       SetCombatMovement(false);
+   }
 
-    void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
-    {
-        if (!m_creature || !m_creature->isAlive())
-            return;
+   void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
+   {
+       if (!m_creature || !m_creature->isAlive())
+           return;
 
-        if (uiDamage > 0)
-            m_creature->CastSpell(m_creature, 53273, true);
-    }
+       if (uiDamage > 0)
+           m_creature->CastSpell(m_creature, 53273, true);
+   }
 
-    void JustDied(Unit* killer)
-    {
-        if (!m_creature || !p_owner)
-            return;
+   void JustDied(Unit* killer)
+   {
+       if (!m_creature || !p_owner)
+           return;
 
-        SpellEntry const* createSpell = GetSpellStore()->LookupEntry(m_creature->GetUInt32Value(UNIT_CREATED_BY_SPELL));
+       SpellEntry const* createSpell = GetSpellStore()->LookupEntry(m_creature->GetUInt32Value(UNIT_CREATED_BY_SPELL));
 
-        if (createSpell)
-            p_owner->SendCooldownEvent(createSpell);
-    }
+       if (createSpell)
+           p_owner->SendCooldownEvent(createSpell);
+   }
 
-    void UpdateAI(const uint32 uiDiff)
-    {
-        if (p_owner)
-            return;
+   void UpdateAI(const uint32 uiDiff)
+   {
+       if (p_owner)
+           return;
 
-        p_owner = m_creature->GetMap()->GetPlayer(m_creature->GetCreatorGuid());
+       p_owner = m_creature->GetMap()->GetPlayer(m_creature->GetCreatorGuid());
 
-        if (!p_owner) 
-            return;
+       if (!p_owner) 
+           return;
 
-        m_creature->setFaction(p_owner->getFaction());
-        m_creature->SetCreatorGuid(ObjectGuid());
-    }
+       m_creature->setFaction(p_owner->getFaction());
+       m_creature->SetCreatorGuid(ObjectGuid());
+   }
 };
 
 CreatureAI* GetAI_npc_explosive_decoy(Creature* pCreature)
 {
-    return new npc_explosive_decoyAI(pCreature);
+   return new npc_explosive_decoyAI(pCreature);
 }
 
 struct MANGOS_DLL_DECL npc_eye_of_kilrogg : public ScriptedAI
@@ -2338,6 +2338,7 @@ CreatureAI* GetAI_npc_eye_of_kilrogg(Creature* pCreature)
 {
     return new npc_eye_of_kilrogg(pCreature);
 }
+
 
 void AddSC_npcs_special()
 {
@@ -2448,19 +2449,20 @@ void AddSC_npcs_special()
     newscript->Name = "npc_death_knight_gargoyle";
     newscript->GetAI = &GetAI_npc_death_knight_gargoyle;
     newscript->RegisterSelf();
-
+	
     newscript = new Script;
     newscript->Name = "npc_risen_ally";
     newscript->GetAI = &GetAI_npc_risen_ally;
     newscript->RegisterSelf();
-
+	
     newscript = new Script;
     newscript->Name = "npc_explosive_decoy";
     newscript->GetAI = &GetAI_npc_explosive_decoy;
     newscript->RegisterSelf();
+	
+    newscript = new Script; 
+    newscript->Name = "npc_eye_of_kilrogg"; 
+    newscript->GetAI = &GetAI_npc_eye_of_kilrogg; 
+    newscript->RegisterSelf(); 
 
-    newscript = new Script;
-    newscript->Name = "npc_eye_of_kilrogg";
-    newscript->GetAI = &GetAI_npc_eye_of_kilrogg;
-    newscript->RegisterSelf();
 }

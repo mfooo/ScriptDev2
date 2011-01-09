@@ -26,192 +26,170 @@ EndScriptData */
 
 enum
 {
-    SAY_AGGRO1               = -1533120,
-    SAY_AGGRO2               = -1533121,
-    SAY_AGGRO3               = -1533122,
-    SAY_SLAY1                = -1533123,
-    SAY_SLAY2                = -1533124,
-    SAY_COMMAND1             = -1533125,
-    SAY_COMMAND2             = -1533126,
-    SAY_COMMAND3             = -1533127,
-    SAY_COMMAND4             = -1533128,
+    SAY_AGGRO1               = -1533125,
+    SAY_AGGRO2               = -1533126,
+    SAY_AGGRO3               = -1533128,
+    SAY_AGGRO4               = -1533123,
+    SAY_COMMAND1             = -1533121,
+    SAY_COMMAND2             = -1533122,
+    SAY_COMMAND3             = -1533124,
+    SAY_COMMAND4             = -1533127,
+    SAY_COMMAND5             = -1533120,
     SAY_DEATH                = -1533129,
 
-    SPELL_UNBALANCING_STRIKE = 26613,
+    SPELL_UNBALANCING_STRIKE = 55470,
     SPELL_DISRUPTING_SHOUT   = 55543,
     SPELL_DISRUPTING_SHOUT_H = 29107,
     SPELL_JAGGED_KNIFE       = 55550,
     SPELL_HOPELESS           = 29125,
+    SPELL_FORCE_OBEDIENCE    = 55479,
 
     NPC_DEATH_KNIGHT_UNDERSTUDY = 16803
 };
 
 bool GossipHello_npc_obedience_crystal(Player* pPlayer, Creature* pCreature)
 {
-    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "To use Mind Control click here !", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
-    return true;
-}
-bool GossipSelect_npc_obedience_crystal(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
-{
-    if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
+    std::list<Creature*> lDeathKnightList;
+    Unit* pTarget = NULL;
+
+    GetCreatureListWithEntryInGrid(lDeathKnightList, pCreature, NPC_DEATH_KNIGHT_UNDERSTUDY, 100.0f);
+
+    if (!lDeathKnightList.empty())
     {
-        if (Unit* target = GetClosestCreatureWithEntry(pCreature, NPC_DEATH_KNIGHT_UNDERSTUDY, 100.0f))
-            pPlayer->CastSpell(target, 55479, true);
-        pPlayer->CLOSE_GOSSIP_MENU();
-        pPlayer->TalkedToCreature(pCreature->GetEntry(), pCreature->GetGUID());
+        pTarget = *(lDeathKnightList.begin());
+        for (std::list<Creature*>::iterator itr = lDeathKnightList.begin(); itr != lDeathKnightList.end(); ++itr)
+        {
+            if ((*itr)->isDead() || (*itr)->HasAura(SPELL_FORCE_OBEDIENCE))
+                continue;
+
+            if ((pCreature->GetDistance2d(*itr) < pCreature->GetDistance2d(pTarget)) || pTarget->isDead())
+                pTarget = *itr;
+        }
     }
+
+    if (pTarget && pTarget->isAlive() && !pTarget->HasAura(SPELL_FORCE_OBEDIENCE))
+        pPlayer->CastSpell(pTarget, SPELL_FORCE_OBEDIENCE, true);
+
     return true;
 }
+
 struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
 {
     boss_razuviousAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        m_pInstance = (instance_naxxramas*)pCreature->GetInstanceData();
         m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
         Reset();
     }
 
-    ScriptedInstance* m_pInstance;
+    instance_naxxramas* m_pInstance;
     bool m_bIsRegularMode;
 
-    std::list<uint64> DeathKnightList;
+    std::list<Creature*> m_lDeathKnightList;
 
     uint32 UnbalancingStrike_Timer;
     uint32 DisruptingShout_Timer;
+    uint32 JaggedKnife_Timer;
     uint32 CommandSound_Timer;
 
     void Reset()
     {
-        UnbalancingStrike_Timer = 30000;                    //30 seconds
-        DisruptingShout_Timer = 25000;                      //25 seconds
-        CommandSound_Timer = 40000;                         //40 seconds
+        UnbalancingStrike_Timer = urand(7000, 8000);
+        DisruptingShout_Timer = 15000;
+        JaggedKnife_Timer = 10000;
+        CommandSound_Timer = 30000;
+        m_lDeathKnightList.clear();
+        GetCreatureListWithEntryInGrid(m_lDeathKnightList, m_creature, NPC_DEATH_KNIGHT_UNDERSTUDY, 50.0f);
 
-        DespawnDeathKnightUnderstudies();
-        SpawnDeathKnightUnderstudies();
+        if (!m_lDeathKnightList.empty())
+            for (std::list<Creature*>::iterator itr = m_lDeathKnightList.begin(); itr != m_lDeathKnightList.end(); ++itr)
+                (*itr)->Respawn();
+    }
 
+    void JustReachedHome()
+    {
         if (m_pInstance)
-            m_pInstance->SetData(TYPE_RAZUVIOUS, NOT_STARTED);
-        
+            m_pInstance->SetData(TYPE_RAZUVIOUS, FAIL);
     }
 
-    void KilledUnit(Unit* Victim)
+    void Aggro(Unit *pWho)
     {
-        if (rand()%3)
-            return;
-
-        switch (rand()%2)
+        switch(urand(0, 3))
         {
-            case 0:
-                DoPlaySoundToSet(m_creature, SAY_SLAY1);
-                break;
-            case 1:
-                DoPlaySoundToSet(m_creature, SAY_SLAY2);
-                break;
-        }
-    }
-
-    void JustDied(Unit* Killer)
-    {
-        DoPlaySoundToSet(m_creature, SAY_DEATH);
-
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_RAZUVIOUS, DONE);
-
-        std::list<Creature*> m_pDeathKnight;
-        GetCreatureListWithEntryInGrid(m_pDeathKnight, m_creature, NPC_DEATH_KNIGHT_UNDERSTUDY, 100.0f);
-
-        if (!m_pDeathKnight.empty())
-            for(std::list<Creature*>::iterator itr = m_pDeathKnight.begin(); itr != m_pDeathKnight.end(); ++itr)
-            {
-                (*itr)->CastSpell((*itr), SPELL_HOPELESS, true);
-                (*itr)->SetArmor(0);
-            }
-    }
-
-    void Aggro(Unit *who)
-    {
-        switch (rand()%3)
-        {
-            case 0:
-                DoPlaySoundToSet(m_creature, SAY_AGGRO1);
-                break;
-            case 1:
-                DoPlaySoundToSet(m_creature, SAY_AGGRO2);
-                break;
-            case 2:
-                DoPlaySoundToSet(m_creature, SAY_AGGRO3);
-                break;
+            case 0: DoScriptText(SAY_AGGRO1, m_creature); break;
+            case 1: DoScriptText(SAY_AGGRO2, m_creature); break;
+            case 2: DoScriptText(SAY_AGGRO3, m_creature); break;
+            case 3: DoScriptText(SAY_AGGRO4, m_creature); break;
         }
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_RAZUVIOUS, IN_PROGRESS);
 
-        m_creature->CallForHelp(20.0f);
+        if (!m_lDeathKnightList.empty())
+            for(std::list<Creature*>::iterator itr = m_lDeathKnightList.begin(); itr != m_lDeathKnightList.end(); ++itr)
+            {
+                (*itr)->AI()->AttackStart(pWho);
+                (*itr)->SetPvP(true);
+            }
 
+        m_creature->SetInCombatWithZone();
     }
 
-    void DespawnDeathKnightUnderstudies()
+    void JustDied(Unit* pKiller)
     {
-        std::list<Creature*> m_pDeathKnight;
-        GetCreatureListWithEntryInGrid(m_pDeathKnight, m_creature, NPC_DEATH_KNIGHT_UNDERSTUDY, DEFAULT_VISIBILITY_INSTANCE);
+        DoScriptText(SAY_DEATH, m_creature);
 
-        if (!m_pDeathKnight.empty())
-            for(std::list<Creature*>::iterator itr = m_pDeathKnight.begin(); itr != m_pDeathKnight.end(); ++itr)
-                (*itr)->ForcedDespawn();
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_RAZUVIOUS, DONE);
+
+        DoCast(m_creature, SPELL_HOPELESS, true);
     }
 
-    void SpawnDeathKnightUnderstudies()
-    {
-        m_creature->SummonCreature(NPC_DEATH_KNIGHT_UNDERSTUDY, 2757.48f, -3111.52f, 267.77f, 3.93f, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 3000000);
-        m_creature->SummonCreature(NPC_DEATH_KNIGHT_UNDERSTUDY, 2762.05f, -3084.47f, 267.77f, 2.13f, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 3000000);
-        
-        if(!m_bIsRegularMode)
-        {
-            m_creature->SummonCreature(NPC_DEATH_KNIGHT_UNDERSTUDY, 2781.99f, -3087.81f, 267.68f, 0.61f, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 3000000);
-            m_creature->SummonCreature(NPC_DEATH_KNIGHT_UNDERSTUDY, 2779.13f, -3112.39f, 267.68f, 5.1f, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 3000000);
-        }
-    }
     void UpdateAI(const uint32 diff)
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        //UnbalancingStrike_Timer
         if (UnbalancingStrike_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_UNBALANCING_STRIKE);
-            UnbalancingStrike_Timer = 30000;
-        }else UnbalancingStrike_Timer -= diff;
+            DoCast(m_creature->getVictim(), SPELL_UNBALANCING_STRIKE);
+            UnbalancingStrike_Timer = urand(7000, 8000);;
+        }
+        else
+            UnbalancingStrike_Timer -= diff;
 
-        //DisruptingShout_Timer
         if (DisruptingShout_Timer < diff)
         {
-            DoCast(m_creature->getVictim(), m_bIsRegularMode? SPELL_DISRUPTING_SHOUT : SPELL_DISRUPTING_SHOUT_H);
-            DisruptingShout_Timer = 25000;
-        }else DisruptingShout_Timer -= diff;
+            DoCast(m_creature, m_bIsRegularMode ? SPELL_DISRUPTING_SHOUT : SPELL_DISRUPTING_SHOUT_H);
+            DisruptingShout_Timer = 15000;
+        }
+        else
+            DisruptingShout_Timer -= diff;
 
-        //CommandSound_Timer
+        if (JaggedKnife_Timer < diff)
+        {
+            if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                DoCast(pTarget, SPELL_JAGGED_KNIFE, true);
+            JaggedKnife_Timer = 10000;
+        }
+        else
+            JaggedKnife_Timer -= diff;
+
         if (CommandSound_Timer < diff)
         {
-            switch (rand()%4)
+            switch(urand(0, 4))
             {
-                case 0:
-                    DoPlaySoundToSet(m_creature, SAY_COMMAND1);
-                    break;
-                case 1:
-                    DoPlaySoundToSet(m_creature, SAY_COMMAND2);
-                    break;
-                case 2:
-                    DoPlaySoundToSet(m_creature, SAY_COMMAND3);
-                    break;
-                case 3:
-                    DoPlaySoundToSet(m_creature, SAY_COMMAND4);
-                    break;
+                case 0: DoScriptText(SAY_COMMAND1, m_creature); break;
+                case 1: DoScriptText(SAY_COMMAND2, m_creature); break;
+                case 2: DoScriptText(SAY_COMMAND3, m_creature); break;
+                case 3: DoScriptText(SAY_COMMAND4, m_creature); break;
+                case 4: DoScriptText(SAY_COMMAND5, m_creature); break;
             }
 
-            CommandSound_Timer = 40000;
-        }else CommandSound_Timer -= diff;
+            CommandSound_Timer = 30000;
+        }
+        else
+            CommandSound_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -228,8 +206,7 @@ void AddSC_boss_razuvious()
     
     NewScript = new Script;
     NewScript->Name = "npc_obedience_crystal";
-    NewScript->pGossipHello =  &GossipHello_npc_obedience_crystal;
-    NewScript->pGossipSelect = &GossipSelect_npc_obedience_crystal;
+    NewScript->pGossipHello = &GossipHello_npc_obedience_crystal;
     NewScript->RegisterSelf();
     
     NewScript = new Script;

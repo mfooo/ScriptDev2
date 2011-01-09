@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: boss_xevozz
 SDAuthor: ckegg
-SD%Complete: 60%
+SD%Complete: 0
 SDComment: 
 SDCategory: The Violet Hold
 EndScriptData */
@@ -146,6 +146,12 @@ struct MANGOS_DLL_DECL boss_xevozzAI : public ScriptedAI
         pSummoned->SetSpeedRate(MOVE_RUN, 0.5f);
         pSummoned->StopMoving();
         pSummoned->CastSpell(pSummoned, SPELL_ETHEREAL_BEACON_VISUAL, false);
+    //    pSummoned->GetMotionMaster()->MoveFollow(m_creature, 0, 0);
+       /* if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+        {
+            pSummoned->AddThreat(pTarget);
+            pSummoned->AI()->AttackStart(pTarget);
+        }*/ 
     }
 
     void StartMovement(uint32 id)
@@ -210,6 +216,7 @@ struct MANGOS_DLL_DECL boss_xevozzAI : public ScriptedAI
         if (m_uiDespawn_Timer < uiDiff)
         {
             DespawnSphere();
+            
         }
         else m_uiDespawn_Timer -= uiDiff;
 
@@ -254,7 +261,7 @@ struct MANGOS_DLL_DECL mob_ethereal_sphereAI : public ScriptedAI
     uint32 m_uiRangeCheck_Timer;
     uint32 m_uiPhaseCheck_Timer;
     bool bNormalPhase;
-
+    
 
     void Reset()
     {
@@ -296,6 +303,8 @@ struct MANGOS_DLL_DECL mob_ethereal_sphereAI : public ScriptedAI
                             m_creature->CastSpell(pXevozz, SPELL_ARCANE_POWER_H, false);
                         // DoCast(pXevozz,SPELL_ARCANE_POWER_H);
                         }
+                    
+                        
                     }
                 }
                 m_uiRangeCheck_Timer = 1000;
@@ -307,7 +316,7 @@ struct MANGOS_DLL_DECL mob_ethereal_sphereAI : public ScriptedAI
                 if(Creature* pXevozz = (m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_XEVOZZ))))
                 {
                     float fDistance = m_creature->GetDistance2d(pXevozz);
-
+            
                     if(fDistance<=20 && fDistance >6)
                     {
                         DoCast(m_creature, SPELL_SUMMON_PLAYERS); // not working right

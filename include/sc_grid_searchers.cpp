@@ -1,8 +1,21 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software licensed under GPL version 2
  * Please see the included DOCS/LICENSE.TXT for more information */
 
 #include "precompiled.h"
+
+//return closest attackable Unit in grid, with range from pSource
+Unit* GetClosestAttackableUnit(Unit* pSource, float fMaxSearchRange)
+{
+    Unit* pTarget = NULL;
+
+    MaNGOS::NearestAttackableUnitInObjectRangeCheck unit_check(pSource, pSource, fMaxSearchRange);
+    MaNGOS::UnitLastSearcher<MaNGOS::NearestAttackableUnitInObjectRangeCheck> searcher(pTarget, unit_check);
+
+    Cell::VisitAllObjects(pSource, searcher, fMaxSearchRange);
+
+    return pTarget;
+}
 
 //return closest GO in grid, with range from pSource
 GameObject* GetClosestGameObjectWithEntry(WorldObject* pSource, uint32 uiEntry, float fMaxSearchRange)

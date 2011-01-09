@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 /dev/rsa for ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2010 - 2011 /dev/rsa for ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -24,7 +24,7 @@ EndScriptData */
 // Need correct timers
 
 #include "precompiled.h"
-#include "ruby_sanctum.h"
+#include "def_ruby_sanctum.h"
 
 static Locations SpawnLoc[]=
 {
@@ -43,7 +43,7 @@ enum Equipment
 enum BossSpells
 {
     SPELL_BLADE_TEMPEST              = 75125, // every 22 secs
-    SPELL_ENERVATING_BRAND           = 74502, // friendlys in 12yards = 74505
+    SPELL_ENERVATING_BRAND           = 74502, // friendlies in 12yards = 74505
     SPELL_REPELLING_WAVE             = 74509, // once if call clone
     SPELL_SABER_LASH                 = 40504, // every 10-15 secs
     SPELL_SUMMON_CLONE               = 74511, // summons npc 39899 (Clone)
@@ -254,7 +254,7 @@ struct MANGOS_DLL_DECL boss_baltharusAI : public BSWScriptedAI
                  break;
         }
 
-//        timedCast(SPELL_BLADE_TEMPEST, uiDiff);
+        timedCast(SPELL_BLADE_TEMPEST, uiDiff);
         timedCast(SPELL_ENERVATING_BRAND, uiDiff);
         timedCast(SPELL_SABER_LASH, uiDiff);
 

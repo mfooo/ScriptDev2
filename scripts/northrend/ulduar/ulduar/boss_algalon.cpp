@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; either version 2 of the License, or
@@ -813,7 +813,7 @@ struct MANGOS_DLL_DECL mob_cosmic_smash_targetAI : public ScriptedAI
 };
 
 
-bool GOHello_go_celestial_acces(Player* pPlayer, GameObject* pGo)
+bool GOUse_go_celestial_acces(Player* pPlayer, GameObject* pGo)
 {
     ScriptedInstance* m_pInstance = (ScriptedInstance*)pGo->GetInstanceData();
     bool m_bIsRegularMode = pGo->GetMap()->IsRegularDifficulty();
@@ -916,6 +916,6 @@ void AddSC_boss_algalon()
 
     newscript = new Script;
     newscript->Name = "go_celestial_acces";
-    newscript->pGOUse = &GOHello_go_celestial_acces;
+    newscript->pGOUse = &GOUse_go_celestial_acces;
     newscript->RegisterSelf();
 }

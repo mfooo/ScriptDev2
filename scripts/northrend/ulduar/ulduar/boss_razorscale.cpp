@@ -827,7 +827,7 @@ CreatureAI* GetAI_boss_razorscale(Creature* pCreature)
     return new boss_razorscaleAI(pCreature);
 }
 
-bool GOHello_go_broken_harpoon(Player* pPlayer, GameObject* pGo)
+bool GOUse_go_broken_harpoon(Player* pPlayer, GameObject* pGo)
 {
     ScriptedInstance* pInstance = (ScriptedInstance*)pGo->GetInstanceData();
 
@@ -884,6 +884,6 @@ void AddSC_boss_razorscale()
 
     NewScript = new Script;
     NewScript->Name = "go_broken_harpoon";
-    NewScript->pGOUse = &GOHello_go_broken_harpoon;
+    NewScript->pGOUse = &GOUse_go_broken_harpoon;
     NewScript->RegisterSelf();
 }

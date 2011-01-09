@@ -17,8 +17,8 @@
 /* ScriptData
 SDName: boss_moragg
 SDAuthor: ckegg
-SD%Complete: 50%
-SDComment:
+SD%Complete: 0
+SDComment: 
 SDCategory: The Violet Hold
 EndScriptData */
 

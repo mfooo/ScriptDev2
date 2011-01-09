@@ -242,7 +242,10 @@ struct MANGOS_DLL_DECL boss_kelesethAI : public ScriptedAI
 
         if (!lAddsList.empty())
             for(std::list<Creature*>::iterator itr = lAddsList.begin(); itr != lAddsList.end(); ++itr)
-                (*itr)->ForcedDespawn();
+                if (m_creature->isDead())
+                    (*itr)->DealDamage(*itr, (*itr)->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                else
+                    (*itr)->ForcedDespawn();
     }
 
     void JustSummoned(Creature* pSummoned)
@@ -257,6 +260,7 @@ struct MANGOS_DLL_DECL boss_kelesethAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
+        DespawnAdds();
     }
 
     void KilledUnit(Unit* pVictim)
