@@ -27,35 +27,37 @@ EndContentData */
 
 #include "precompiled.h"
 #include "zulaman.h"
+#include "escort_ai.h"
 
 /*######
 ## npc_forest_frog
 ######*/
 
-#define SPELL_REMOVE_AMANI_CURSE    43732
-#define SPELL_PUSH_MOJO             43923
-#define ENTRY_FOREST_FROG           24396
+enum
+{
+    SPELL_REMOVE_AMANI_CURSE = 43732,
+    SPELL_PUSH_MOJO          = 43923,
+    ENTRY_FOREST_FROG        = 24396
+};
 
 struct MANGOS_DLL_DECL npc_forest_frogAI : public ScriptedAI
 {
-    npc_forest_frogAI(Creature* c) : ScriptedAI(c)
+    npc_forest_frogAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        pInstance = ((ScriptedInstance*)c->GetInstanceData());
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
         Reset();
     }
 
-    ScriptedInstance *pInstance;
+    ScriptedInstance* m_pInstance;
 
     void Reset() { }
 
-    void Aggro(Unit *who) { }
-
     void DoSpawnRandom()
     {
-        if( pInstance )
+        if (m_pInstance)
         {
             uint32 cEntry = 0;
-            switch(rand()%11)
+            switch(urand(0, 10))
             {
                 case 0: cEntry = 24024; break;              //Kraz
                 case 1: cEntry = 24397; break;              //Mannuth
@@ -70,75 +72,171 @@ struct MANGOS_DLL_DECL npc_forest_frogAI : public ScriptedAI
                 case 10: cEntry = 24455; break;             //Hollee
             }
 
-            if( !pInstance->GetData(TYPE_RAND_VENDOR_1) )
-                if(rand()%10 == 1) cEntry = 24408;          //Gunter
-            if( !pInstance->GetData(TYPE_RAND_VENDOR_2) )
-                if(rand()%10 == 1) cEntry = 24409;          //Kyren
+            if (!m_pInstance->GetData(TYPE_RAND_VENDOR_1))
+                if (!urand(0, 9))
+                    cEntry = 24408;                         //Gunter
 
-            if( cEntry ) m_creature->UpdateEntry(cEntry);
+            if (!m_pInstance->GetData(TYPE_RAND_VENDOR_2))
+                if (!urand(0, 9))
+                    cEntry = 24409;                         //Kyren
 
-            if( cEntry == 24408) pInstance->SetData(TYPE_RAND_VENDOR_1,DONE);
-            if( cEntry == 24409) pInstance->SetData(TYPE_RAND_VENDOR_2,DONE);
+            if (cEntry)
+                m_creature->UpdateEntry(cEntry);
+
+            if (cEntry == 24408)
+                m_pInstance->SetData(TYPE_RAND_VENDOR_1,DONE);
+
+            if (cEntry == 24409)
+                m_pInstance->SetData(TYPE_RAND_VENDOR_2,DONE);
         }
     }
 
     void SpellHit(Unit *caster, const SpellEntry *spell)
     {
-        if( spell->Id == SPELL_REMOVE_AMANI_CURSE && caster->GetTypeId() == TYPEID_PLAYER && m_creature->GetEntry() == ENTRY_FOREST_FROG )
+        if (spell->Id == SPELL_REMOVE_AMANI_CURSE && caster->GetTypeId() == TYPEID_PLAYER && m_creature->GetEntry() == ENTRY_FOREST_FROG)
         {
             //increase or decrease chance of mojo?
-            if( rand()%99 == 50 ) DoCast(caster,SPELL_PUSH_MOJO,true);
-            else DoSpawnRandom();
+            if (!urand(0, 49))
+                DoCastSpellIfCan(caster, SPELL_PUSH_MOJO, CAST_TRIGGERED);
+            else
+                DoSpawnRandom();
         }
     }
 };
-CreatureAI* GetAI_npc_forest_frog(Creature *_Creature)
+CreatureAI* GetAI_npc_forest_frog(Creature* pCreature)
 {
-    return new npc_forest_frogAI (_Creature);
+    return new npc_forest_frogAI(pCreature);
 }
 
 /*######
-## npc_zulaman_hostage
+## npc_harrison_jones_za
 ######*/
 
-#define GOSSIP_HOSTAGE1        "Thank you for the rescue! Here is little reward."
-
-static uint32 HostageInfo[] = {23790, 23999, 24024, 24001};
-
-bool GossipHello_npc_zulaman_hostage(Player* player, Creature* _Creature)
+enum
 {
-    player->ADD_GOSSIP_ITEM(0, GOSSIP_HOSTAGE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    player->SEND_GOSSIP_MENU(player->GetGossipTextId(_Creature), _Creature->GetGUID());
+    SAY_START               = -1568079,
+    SAY_AT_GONG             = -1568080,
+    SAY_OPEN_ENTRANCE       = -1568081,
+
+    SPELL_BANGING_THE_GONG  = 45225
+};
+
+#define GOSSIP_ITEM_BEGIN   "Thanks for the concern, but we intend to explore Zul'Aman."
+
+struct MANGOS_DLL_DECL npc_harrison_jones_zaAI : public npc_escortAI
+{
+    npc_harrison_jones_zaAI(Creature* pCreature) : npc_escortAI(pCreature)
+    {
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        Reset();
+    }
+
+    ScriptedInstance* m_pInstance;
+
+    void WaypointReached(uint32 uiPointId)
+    {
+        if (!m_pInstance)
+            return;
+
+        switch(uiPointId)
+        {
+            case 1:
+                DoScriptText(SAY_AT_GONG, m_creature);
+
+                if (GameObject* pEntranceDoor = m_pInstance->instance->GetGameObject(m_pInstance->GetData64(DATA_GO_GONG)))
+                    pEntranceDoor->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
+
+                //Start bang gong for 2min
+                m_creature->CastSpell(m_creature, SPELL_BANGING_THE_GONG, false);
+                SetEscortPaused(true);
+                break;
+            case 3:
+                DoScriptText(SAY_OPEN_ENTRANCE, m_creature);
+                break;
+           case 4:
+                m_pInstance->SetData(TYPE_EVENT_RUN,IN_PROGRESS);
+                //TODO: Spawn group of Amani'shi Savage and make them run to entrance
+                break;
+        }
+    }
+
+    void Reset() { }
+
+    void StartEvent()
+    {
+        DoScriptText(SAY_START, m_creature);
+        Start();
+    }
+
+    void SetHoldState(bool bOnHold)
+    {
+        SetEscortPaused(bOnHold);
+
+        //Stop banging gong if still
+        if (m_pInstance && m_pInstance->GetData(TYPE_EVENT_RUN) == SPECIAL && m_creature->HasAura(SPELL_BANGING_THE_GONG))
+            m_creature->RemoveAurasDueToSpell(SPELL_BANGING_THE_GONG);
+    }
+};
+
+bool GossipHello_npc_harrison_jones_za(Player* pPlayer, Creature* pCreature)
+{
+    ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+
+    if (pCreature->isQuestGiver())
+        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+
+    if (pInstance && pInstance->GetData(TYPE_EVENT_RUN) == NOT_STARTED)
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BEGIN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
     return true;
 }
 
-bool GossipSelect_npc_zulaman_hostage(Player* player, Creature* _Creature, uint32 sender, uint32 action)
+bool GossipSelect_npc_harrison_jones_za(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
 {
-    if(action == GOSSIP_ACTION_INFO_DEF + 1)
-        player->CLOSE_GOSSIP_MENU();
-
-    if(!_Creature->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP))
-        return true;
-    _Creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-
-    ScriptedInstance* pInstance = ((ScriptedInstance*)_Creature->GetInstanceData());
-    if(pInstance)
+    if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
     {
-        uint8 progress = pInstance->GetData(DATA_CHESTLOOTED);
-        pInstance->SetData(DATA_CHESTLOOTED, 0);
-        float x, y, z;
-        _Creature->GetPosition(x, y, z);
-        //Creature* summon = _Creature->SummonCreature(HostageInfo[progress], x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 300000);
-        Creature* summon = _Creature->SummonCreature(HostageInfo[progress], x-2, y, z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
-        if(summon)
-        {
-            summon->SetDisplayId(10056);
-            summon->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            summon->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-            player->DealDamage(summon, summon->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-        }
+        if (npc_harrison_jones_zaAI* pHarrisonAI = dynamic_cast<npc_harrison_jones_zaAI*>(pCreature->AI()))
+            pHarrisonAI->StartEvent();
+
+        pPlayer->CLOSE_GOSSIP_MENU();
     }
     return true;
+}
+
+CreatureAI* GetAI_npc_harrison_jones_za(Creature* pCreature)
+{
+    return new npc_harrison_jones_zaAI(pCreature);
+}
+
+/*######
+## go_strange_gong
+######*/
+
+//Unsure how this Gong must work. Here we always return false to allow Mangos always process further.
+bool GOUse_go_strange_gong(Player* pPlayer, GameObject* pGo)
+{
+    ScriptedInstance* pInstance = (ScriptedInstance*)pGo->GetInstanceData();
+
+    if (!pInstance)
+        return false;
+
+    if (pInstance->GetData(TYPE_EVENT_RUN) == SPECIAL)
+    {
+        if (Creature* pCreature = pGo->GetMap()->GetCreature(pInstance->GetData64(DATA_HARRISON)))
+        {
+            if (npc_harrison_jones_zaAI* pHarrisonAI = dynamic_cast<npc_harrison_jones_zaAI*>(pCreature->AI()))
+                pHarrisonAI->SetHoldState(false);
+        }
+        else
+            error_log("SD2: Instance Zulaman: go_strange_gong failed");
+
+        pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
+        return false;
+    }
+
+    pInstance->SetData(TYPE_EVENT_RUN, SPECIAL);
+    return false;
 }
 
 void AddSC_zulaman()
@@ -151,8 +249,14 @@ void AddSC_zulaman()
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name = "npc_zulaman_hostage";
-    newscript->pGossipHello = GossipHello_npc_zulaman_hostage;
-    newscript->pGossipSelect = GossipSelect_npc_zulaman_hostage;
+    newscript->Name = "npc_harrison_jones_za";
+    newscript->GetAI = &GetAI_npc_harrison_jones_za;
+    newscript->pGossipHello =  &GossipHello_npc_harrison_jones_za;
+    newscript->pGossipSelect = &GossipSelect_npc_harrison_jones_za;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "go_strange_gong";
+    newscript->pGOUse = &GOUse_go_strange_gong;
     newscript->RegisterSelf();
 }
