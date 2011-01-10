@@ -38,7 +38,7 @@ enum
 
 struct MANGOS_DLL_DECL instance_oculus : public ScriptedInstance
 {
-    instance_oculus(Map* pMap) : ScriptedInstance(pMap) 
+    instance_oculus(Map* pMap) : ScriptedInstance(pMap)
     {
         m_bIsRegularMode = pMap->IsRegularDifficulty();
         Initialize();
@@ -94,7 +94,7 @@ struct MANGOS_DLL_DECL instance_oculus : public ScriptedInstance
                 break;
         }
     }
-	
+
     void OpenCageDoors()
     {
         if(m_uiCageDoorList.empty())
@@ -275,7 +275,7 @@ void AddSC_instance_oculus()
     newscript->Name = "instance_oculus";
     newscript->GetInstanceData = &GetInstanceData_instance_oculus;
     newscript->RegisterSelf();
-	
+
     newscript = new Script;
     newscript->Name = "go_oculus_portal";
     newscript->pGOUse = GOUse_go_oculus_portal;

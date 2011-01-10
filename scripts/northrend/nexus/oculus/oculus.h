@@ -2,6 +2,15 @@
  * This program is free software licensed under GPL version 2
  * Please see the included DOCS/LICENSE.TXT for more information */
 
+/* ScriptData
+SDName: oculus.h
+SD%Complete: ??%
+SDComment: /dev/rsa/ && dev // FallenAngelX
+SDCategory:
+EndScriptData */
+
+
+
 #ifndef DEF_OCULUS_H
 #define DEF_OCULUS_H
 #include "BSW_ai.h"

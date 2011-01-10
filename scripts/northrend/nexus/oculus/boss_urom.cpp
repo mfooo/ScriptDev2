@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: oculus
 SD%Complete: 95%
-SDComment: // dev // FallenAngelX  
+SDComment: // dev // FallenAngelX
 SDCategory:Mage-Lord Urom
 ToDo:: time bomb detonate needs the damage fixed && FrostBomb needs snare effect fixed
 EndScriptData */
@@ -94,7 +94,7 @@ struct MANGOS_DLL_DECL boss_uromAI: public ScriptedAI
 	void Reset()
 	{
 		m_creature->SetFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NON_ATTACKABLE);
-		
+
 		TeleportTimer = 0;
 		CanCatchCombatTimer = 0;
 		isEscaping = false;
@@ -135,7 +135,7 @@ struct MANGOS_DLL_DECL boss_uromAI: public ScriptedAI
 	}
 
 	void MoveInLineOfSight(Unit* pWho)
-	{ 	
+	{
 		if(isEscaping || CanCatchCombatTimer || m_creature->getVictim())
 			return;
 
@@ -146,7 +146,7 @@ struct MANGOS_DLL_DECL boss_uromAI: public ScriptedAI
 
 			switch(FightPhase)
 			{
-			case RING_ONE:   
+			case RING_ONE:
 				DoScriptText(SAY_SUMMON1,m_creature);
 				m_creature->GetMotionMaster()->MoveIdle();
 				m_creature->CastSpell(m_creature,SPELL_SUMMON_MENAGERIE_1,false);

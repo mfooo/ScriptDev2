@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: oculus
 SD%Complete: 90%
-SDComment: // dev //FallenAngelX    
+SDComment: // dev //FallenAngelX
 SDCategory: Drakos the Interrogator
 ToDo:: last thing spheres need to cause damge to players when they explode & Thunder Stomp needs core support for ensnare effect ( 35% movement reduction ) and he's finished
 & implent achievement 18153 kill eregos within 20 mins of drakos death  as well as finishing touches on texts
@@ -35,12 +35,9 @@ enum
 	SPELL_MAGIC_PULL                = 50770,
 	SPELL_THUNDERING_STOMP          = 50774,
 	H_SPELL_THUNDERING_STOMP        = 59370,
- 
+
 	SAY_INTRO                  = -1000006,
-	SAY_AGGRO_1                = -1578000,
-	SAY_AGGRO_2                = -1000013,
-	SAY_AGGRO_3                = -1000014,
-	SAY_AGGRO_4                = -1000015,
+	SAY_AGGRO                  = -1578000,
 	SAY_SLAY_1                 = -1578001,
 	SAY_SLAY_2                 = -1578002,
 	SAY_SLAY_3                 = -1578003,
@@ -50,7 +47,7 @@ enum
 	SAY_DEATH                  = -1578004,
 	EMOTE_MAGIC_PULL           = -1000012
 };
- 
+
 struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
 {
         boss_drakosAI(Creature* pCreature) : ScriptedAI(pCreature)
@@ -59,10 +56,10 @@ struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
         m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
         Reset();
     }
- 
+
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
- 
+
     // variables
     // timers
     uint32 ThunderingStomp_Timer;
@@ -75,21 +72,21 @@ struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
     bool MagicPull40;
     bool MagicPull20;
     bool Intro;
- 
+
     void Reset() // initialization
     {
-                ThunderingStomp_Timer = 20000;
-                Bomb_Timer = 3000;
-                Teleport_Timer = 8000;
-                Global_Cooldown_Timer = 0;
-                MagicPull80 = false;
-                MagicPull60 = false;
-                MagicPull40 = false;
-                MagicPull20 = false;
-                Intro = false;
-                m_creature->SetVisibility(VISIBILITY_ON);
+        ThunderingStomp_Timer = 20000;
+        Bomb_Timer = 3000;
+        Teleport_Timer = 8000;
+        Global_Cooldown_Timer = 0;
+        MagicPull80 = false;
+        MagicPull60 = false;
+        MagicPull40 = false;
+        MagicPull20 = false;
+        Intro = false;
+        m_creature->SetVisibility(VISIBILITY_ON);
     }
- 
+
     void MoveInLineOfSight(Unit *who)
     {
         if (!m_creature->getVictim() && who->isTargetableForAttack() && (m_creature->IsHostileTo(who)) && who->isInAccessablePlaceFor(m_creature))
@@ -99,10 +96,10 @@ struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
                DoScriptText(SAY_INTRO, m_creature);
                                 Intro = true;
             }
- 
+
             if (!m_creature->CanFly() && m_creature->GetDistanceZ(who) > CREATURE_Z_ATTACK_RANGE)
                 return;
- 
+
             float attackRadius = m_creature->GetAttackDistance(who);
             if (m_creature->IsWithinDistInMap(who, attackRadius) && m_creature->IsWithinLOSInMap(who))
             {
@@ -111,25 +108,22 @@ struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
             }
         }
     }
- 
-    void Aggro(Unit *who)
+
+    void Aggro(Unit* who)
     {
-        switch(urand(0, 3))
-        {
-            case 0: DoScriptText(SAY_AGGRO_1, m_creature); break;
-            case 1: DoScriptText(SAY_AGGRO_2, m_creature); break;
-            case 2: DoScriptText(SAY_AGGRO_3, m_creature); break;
-                        case 3: DoScriptText(SAY_AGGRO_4, m_creature); break;
-        }
+        DoScriptText(SAY_AGGRO, m_creature);
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_DRAKOS, IN_PROGRESS);
     }
- 
+
     void JustDied(Unit* Killer)
     {
         DoScriptText(SAY_DEATH, m_creature);
 		if(m_pInstance)
 			m_pInstance->SetData(TYPE_DRAKOS,DONE);
     }
- 
+
     void KilledUnit(Unit* victim)
     {
         switch(urand(0, 2))
@@ -139,14 +133,14 @@ struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
             case 2: DoScriptText(SAY_SLAY_3, m_creature); break;
         }
     }
- 
+
     void TeleportPlayers() // teleport the entire group to the bosses position.
     {
                 float x = m_creature->GetPositionX();
                 float y = m_creature->GetPositionY();
                 float z = m_creature->GetPositionZ();
                 int i;
- 
+
                 for (i = 0; i <= 4; i++)
                 {
                         Unit* Player = NULL;
@@ -157,15 +151,15 @@ struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
                         }else return;
                 }
     }
- 
+
     void UpdateAI(const uint32 diff)
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())  // any valid target?
             return;
- 
+
                 if (Teleport_Timer < diff)
                 {
-                        TeleportPlayers(); 
+                        TeleportPlayers();
                         Teleport_Timer = 8000;
                 }
                 else
@@ -175,7 +169,7 @@ struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
                                 Teleport_Timer -= diff;
                         }
                 }
- 
+
                 if(Bomb_Timer < diff)
                 {
 						uint32 BombCount = urand(1,m_bIsRegularMode?4:6);
@@ -183,14 +177,14 @@ struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
 							DoSpawnCreature(28166, 0, 0, 0, 0, TEMPSUMMON_DEAD_DESPAWN, 0); // spawn an unstable sphere, improvisation :P
 						Bomb_Timer = urand(5000, 6000);
                 }else Bomb_Timer -= diff;
- 
+
                 if (Global_Cooldown_Timer < diff)
                 {
                         if (!MagicPull80 && m_creature->GetHealthPercent() < 80.0f) // 80% hp
-                        {       
+                        {
                                 DoScriptText(EMOTE_MAGIC_PULL, m_creature);
                                 DoCastSpellIfCan(m_creature, SPELL_MAGIC_PULL);
-                                Teleport_Timer = 1999; 
+                                Teleport_Timer = 1999;
                                 MagicPull80 = true;
                                 Global_Cooldown_Timer = 2001;
                                 return;
@@ -199,7 +193,7 @@ struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
                         {
                                 DoScriptText(EMOTE_MAGIC_PULL, m_creature);
                                 DoCastSpellIfCan(m_creature, SPELL_MAGIC_PULL);
-                                Teleport_Timer = 1999; 
+                                Teleport_Timer = 1999;
                                 MagicPull60 = true;
                                 Global_Cooldown_Timer = 2001;
                                 return;
@@ -208,7 +202,7 @@ struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
                         {
                                 DoScriptText(EMOTE_MAGIC_PULL, m_creature);
                                 DoCastSpellIfCan(m_creature, SPELL_MAGIC_PULL);
-                                Teleport_Timer = 1999; 
+                                Teleport_Timer = 1999;
                                 MagicPull40 = true;
                                 Global_Cooldown_Timer = 2001;
                                 return;
@@ -217,7 +211,7 @@ struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
                         {
                                 DoScriptText(EMOTE_MAGIC_PULL, m_creature);
                                 DoCastSpellIfCan(m_creature, SPELL_MAGIC_PULL);
-                                Teleport_Timer = 1999; 
+                                Teleport_Timer = 1999;
                                 MagicPull20 = true;
                                 Global_Cooldown_Timer = 2001;
                                 return;
@@ -242,7 +236,7 @@ struct MANGOS_DLL_DECL boss_drakosAI : public ScriptedAI
                 DoMeleeAttackIfReady();
     }
 };
- 
+
 CreatureAI* GetAI_boss_drakos(Creature* pCreature)
 {
     return new boss_drakosAI(pCreature);
@@ -259,12 +253,12 @@ enum
 	SPELL_UNSTABLE_BOOM                    = 50759,  // might be wrong  need spell that cause players damge from core exploding
 	BOMB_SPELL_TIMER                       = 50758
 };
- 
+
 #define X               960
 #define Y               1050
 #define Z               360
 #define PI              3.14
- 
+
 struct MANGOS_DLL_DECL mob_unstable_sphereAI : public ScriptedAI
 {
     mob_unstable_sphereAI(Creature* pCreature) : ScriptedAI(pCreature)
@@ -282,14 +276,14 @@ struct MANGOS_DLL_DECL mob_unstable_sphereAI : public ScriptedAI
 
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
- 
+
     uint32 ArcaneExplosion_Timer;
     uint32 VisibilityOff_Timer;
     uint32 AnotherMovePoint;
 	uint32 DetonateTimer;
     bool explosion;
     bool visibilityOff;
- 
+
 	void MoveToPointInCircle(uint32 id)
     {
         float x, y, z, r, angle;
@@ -300,7 +294,7 @@ struct MANGOS_DLL_DECL mob_unstable_sphereAI : public ScriptedAI
         z = Z;
         m_creature->GetMotionMaster()->MovePoint(id, x, y, z);
     }
- 
+
     void MovementInform(uint32 type, uint32 id)
     {
 		m_creature->GetMotionMaster()->MoveIdle();
@@ -308,7 +302,7 @@ struct MANGOS_DLL_DECL mob_unstable_sphereAI : public ScriptedAI
 			ArcaneExplosion_Timer = 900;
 		explosion = true;
     }
- 
+
     void Reset()
     {
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -322,7 +316,7 @@ struct MANGOS_DLL_DECL mob_unstable_sphereAI : public ScriptedAI
 	{
 		return;
 	}
- 
+
     void UpdateAI(const uint32 diff)
     {
         if (ArcaneExplosion_Timer < diff)
@@ -342,7 +336,7 @@ struct MANGOS_DLL_DECL mob_unstable_sphereAI : public ScriptedAI
 			if (VisibilityOff_Timer < diff)
 			{
 				m_creature->SetVisibility(VISIBILITY_OFF);
-				m_creature->DealDamage(m_creature, m_creature->GetHealth(), 0, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, 0, false); 
+				m_creature->DealDamage(m_creature, m_creature->GetHealth(), 0, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, 0, false);
 				visibilityOff = true;
 			}else VisibilityOff_Timer -= diff;
 		}
