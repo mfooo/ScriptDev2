@@ -1,10 +1,10 @@
-/* 
+/*
 ###############################
  Ancient of War, of Lore v 2.0
  (Darnassus protectors)
 ###############################
 
-by Myav 
+by Myav
 */
 
 #include "precompiled.h"
@@ -87,10 +87,10 @@ void wood()
            Y = y + urand(20, 30);
        else
            Y = y - urand(20, 30);
-       m_creature->GetRespawnCoord(x,y,z);        
+       m_creature->GetRespawnCoord(x,y,z);
        Helper = DoSpawnCreature(4423, (float) (X - x), (float) (Y - y), (float) (Z -z), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
        if(Helper && enemy)
-          ((CreatureAI*)Helper->AI())->AttackStart(enemy); 
+          ((CreatureAI*)Helper->AI())->AttackStart(enemy);
 }
 
 void UpdateAI(const uint32 diff)
@@ -212,7 +212,7 @@ void UpdateAI(const uint32 diff)
             //65% chance to replace our white hit with a spell
             if (info && urand(0, 1) == 0 && !GlobalCooldown)
             {
-                //Cast the spell   
+                //Cast the spell
                 if (Change == 1)DoCastSpellIfCan(m_creature, info);
                 else DoCastSpellIfCan(enemy, info);
 
@@ -224,8 +224,8 @@ void UpdateAI(const uint32 diff)
             m_creature->resetAttackTimer();
         }//end attack ready
     }// end attack distance
-/*    else 
-    { 
+/*    else
+    {
      if(!m_creature->IsNonMeleeSpellCasted(false))
      {
          if ((*m_creature).GetMotionMaster()->top()->GetMovementGeneratorType()!=TARGETED_MOTION_TYPE)
@@ -243,7 +243,7 @@ CreatureAI* GetAI_ancient_of_war(Creature* pCreature)
 }
 
 void AddSC_ancient_of_war()
-{   
+{
     Script *newscript;
 
     newscript = new Script;

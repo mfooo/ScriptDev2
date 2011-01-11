@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+ /* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -158,12 +158,13 @@ bool QuestAccept_npc_shenthul(Player* pPlayer, Creature* pCreature, const Quest*
 ## npc_thrall_warchief
 ######*/
 
-#define QUEST_6566              6566
-
-#define GENERIC_CREATURE_COOLDOWN 5000
-
-#define HEALINGPOTION 54572
-#define POTIONCD 60000
+enum
+{
+    QUEST_6566                          = 6566,
+    CREATURE_COOLDOWN                   = 5000,
+    HEALINGPOTION                       = 54572,
+    POTIONCD                            = 60000,
+};
 
 struct MANGOS_DLL_DECL npc_thrall_warchiefAI : public ScriptedAI
 {
@@ -177,7 +178,7 @@ struct MANGOS_DLL_DECL npc_thrall_warchiefAI : public ScriptedAI
     float temp1;
     float temp2;
     Unit* enemy;
-    Creature* Helper;	
+    Creature* Helper;
 
 void Reset()
 {
@@ -185,9 +186,9 @@ void Reset()
     Help = 5000;
     Potioncd = 0;
 
-    m_creature->setPowerType(POWER_RAGE); 
+    m_creature->setPowerType(POWER_RAGE);
     m_creature->SetMaxPower(POWER_RAGE,500);
-    m_creature->SetPower(POWER_RAGE,0);    
+    m_creature->SetPower(POWER_RAGE,0);
 //    m_creature->SetMaxHealth(360000);
 //    m_creature->SetHealth(360000);
     m_creature->SetArmor(11520);
@@ -238,7 +239,7 @@ void DamageDeal(Unit *done_to, uint32 &damage)
       case 3:temp1 = temp2 + 70;break;
    }
    if(temp1 > 500)
-      m_creature->SetPower(POWER_RAGE,500);   
+      m_creature->SetPower(POWER_RAGE,500);
    else
       m_creature->SetPower(POWER_RAGE,temp1);
 }
@@ -259,9 +260,9 @@ void DamageTaken(Unit *done_by, uint32 &damage)
       case 3:temp1 = temp2 + 50;break;
    }
    if(temp1 > 500)
-      m_creature->SetPower(POWER_RAGE,500);   
+      m_creature->SetPower(POWER_RAGE,500);
    else
-      m_creature->SetPower(POWER_RAGE,temp1); 
+      m_creature->SetPower(POWER_RAGE,temp1);
 }
 
 void UpdateAI(const uint32 diff)
@@ -382,7 +383,7 @@ void UpdateAI(const uint32 diff)
                   info = 12809; // Concussion Blow
                   break;
                case 5:
-                  info = 36138; // Hammer Stun 
+                  info = 36138; // Hammer Stun
                   break;
                case 6:
                   info = 47486; // Mortal Strike
@@ -396,12 +397,12 @@ void UpdateAI(const uint32 diff)
             //65% chance to replace our white hit with a spell
             if (info && urand(0, 1) == 0 && !GlobalCooldown)
             {
-                //Cast the spell   
+                //Cast the spell
                 if (Change == 1)DoCastSpellIfCan(m_creature, info);
                 else DoCastSpellIfCan(enemy, info);
 
                 //Set our global cooldown
-                GlobalCooldown = GENERIC_CREATURE_COOLDOWN;
+                GlobalCooldown = CREATURE_COOLDOWN;
             }//end 50% change
             else m_creature->AttackerStateUpdate(m_creature->getVictim());
 
