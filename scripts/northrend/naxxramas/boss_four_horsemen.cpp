@@ -201,7 +201,7 @@ struct MANGOS_DLL_DECL boss_lady_blaumeuxAI : public ScriptedAI
             if (Enrage_Timer < uiDiff)
             {
                 m_creature->InterruptNonMeleeSpells(false);
-                DoCastSpellIfCanSpellIfCan(m_creature, SPELL_BERSERK);
+                DoCastSpellIfCan(m_creature, SPELL_BERSERK);
                 Enrage_Timer = 300000;
             }
             else
@@ -210,7 +210,7 @@ struct MANGOS_DLL_DECL boss_lady_blaumeuxAI : public ScriptedAI
         if (Mark_Timer < uiDiff)
         {
             m_creature->InterruptNonMeleeSpells(false);
-            DoCastSpellIfCanSpellIfCan(m_creature, SPELL_MARK_OF_BLAUMEUX);
+            DoCastSpellIfCan(m_creature, SPELL_MARK_OF_BLAUMEUX);
             Mark_Timer = 12000;
             Mark_Count++;
         }
@@ -229,7 +229,7 @@ struct MANGOS_DLL_DECL boss_lady_blaumeuxAI : public ScriptedAI
                     if (pTarget && itr->getSource() && m_creature->GetDistance2d(itr->getSource()) < m_creature->GetDistance2d(pTarget))
                         pTarget = itr->getSource();
 
-                DoCastSpellIfCanSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_VOIDZONE : H_SPELL_VOIDZONE);
+                DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_VOIDZONE : H_SPELL_VOIDZONE);
             }
             VoidZone_Timer = 15000;
         }
@@ -248,9 +248,9 @@ struct MANGOS_DLL_DECL boss_lady_blaumeuxAI : public ScriptedAI
                         pTarget = itr->getSource();
 
                 if (pTarget && m_creature->GetDistance2d(pTarget)< 45.0f)
-                    DoCastSpellIfCanSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_SHADOW_BOLT : H_SPELL_SHADOW_BOLT);
+                    DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_SHADOW_BOLT : H_SPELL_SHADOW_BOLT);
                 else
-                    DoCastSpellIfCanSpellIfCan(m_creature, SPELL_UNYIELDING_PAIN);
+                    DoCastSpellIfCan(m_creature, SPELL_UNYIELDING_PAIN);
             }
             ShadowBolt_Timer = 2000;
         }

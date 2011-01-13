@@ -268,9 +268,10 @@ extern void AddSC_boss_skeram();
 extern void AddSC_boss_twinemperors();
 extern void AddSC_mob_anubisath_sentinel();
 extern void AddSC_instance_temple_of_ahnqiraj();
-extern void AddSC_instance_wailing_caverns();               // Wailing Caverns
-extern void AddSC_wailing_caverns();
 extern void AddSC_zulfarrak();                              //zulfarrak
+extern void AddSC_instance_wailing_caverns();               // wailing_caverns
+extern void AddSC_wailing_caverns();
+extern void AddSC_boss_zumrah();                            // zulfarrak
 extern void AddSC_instance_zulfarrak();
 // culling of stratholme
 extern void AddSC_boss_lord_epoch();
@@ -830,7 +831,8 @@ void AddScripts()
     AddSC_instance_wailing_caverns();                       // Wailing Caverns
     AddSC_wailing_caverns();
     AddSC_zulfarrak();                                      //zulfarrak
-	AddSC_instance_zulfarrak();
+    AddSC_boss_zumrah();                                    // zulfarrak
+    AddSC_instance_zulfarrak();
 
     AddSC_ashenvale();
     AddSC_azshara();

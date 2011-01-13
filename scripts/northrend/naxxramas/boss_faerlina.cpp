@@ -153,7 +153,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         if (m_uiPoisonBoltVolleyTimer < uiDiff)
         {
             if (!m_creature->HasAura(SPELL_WIDOWS_EMBRACE))
-                DoCastSpellIfCanSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_POSIONBOLT_VOLLEY : H_SPELL_POSIONBOLT_VOLLEY);
+                DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_POSIONBOLT_VOLLEY : H_SPELL_POSIONBOLT_VOLLEY);
             m_uiPoisonBoltVolleyTimer = urand(14000, 15000);
         }
         else
@@ -163,7 +163,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         if (m_uiRainOfFireTimer < uiDiff)
         {
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                DoCastSpellIfCanSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_RAINOFFIRE : H_SPELL_RAINOFFIRE);
+                DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_RAINOFFIRE : H_SPELL_RAINOFFIRE);
 
             m_uiRainOfFireTimer = urand(6000, 8000);
         }
@@ -180,7 +180,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
                 case 2: DoScriptText(SAY_ENRAGE3, m_creature); break;
             }
             m_creature->MonsterTextEmote("%s goes into a frenzy!", 0, true);
-            DoCastSpellIfCanSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_FRENZY : H_SPELL_FRENZY);
+            DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_FRENZY : H_SPELL_FRENZY);
             m_uiEnrageTimer = urand(60000, 80000);
         }
         else
@@ -245,7 +245,7 @@ struct MANGOS_DLL_DECL mob_worshipperAI : public ScriptedAI
 
         if (m_uiFireball_Timer < uiDiff)
         {
-            DoCastSpellIfCanSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FIREBALL : SPELL_FIREBALL_H);
+            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FIREBALL : SPELL_FIREBALL_H);
             m_uiFireball_Timer = 5000 + rand()%3000;
         }
         else

@@ -474,7 +474,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
 
         if (m_uiFrostBoltTimer < uiDiff)
         {
-            DoCastSpellIfCanSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FROST_BOLT : SPELL_FROST_BOLT_H);
+            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FROST_BOLT : SPELL_FROST_BOLT_H);
             m_uiFrostBoltTimer = urand(2000, 30000);
         }
         else
@@ -482,7 +482,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
 
         if (m_uiFrostBoltNovaTimer < uiDiff)
         {
-            DoCastSpellIfCanSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_FROST_BOLT_NOVA : SPELL_FROST_BOLT_NOVA_H);
+            DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_FROST_BOLT_NOVA : SPELL_FROST_BOLT_NOVA_H);
             m_uiFrostBoltNovaTimer = 15000;
         }
         else
@@ -517,7 +517,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                     DoResetThreat();
                 }
 
-                //DoCastSpellIfCanSpellIfCan(pTarget, SPELL_CHAINS_OF_KELTHUZAD);
+                //DoCastSpellIfCan(pTarget, SPELL_CHAINS_OF_KELTHUZAD);
 
                 DoScriptText(urand(0, 1) ? SAY_CHAIN1 : SAY_CHAIN2, m_creature);
 
@@ -586,7 +586,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
             if (pTarget)
             {
                 m_creature->InterruptNonMeleeSpells(false);
-                DoCastSpellIfCanSpellIfCan(pTarget, SPELL_MANA_DETONATION);
+                DoCastSpellIfCan(pTarget, SPELL_MANA_DETONATION);
             }
 
             if (urand(0, 1))
@@ -602,7 +602,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
             {
                 m_creature->InterruptNonMeleeSpells(false);
-                DoCastSpellIfCanSpellIfCan(pTarget, SPELL_SHADOW_FISSURE);
+                DoCastSpellIfCan(pTarget, SPELL_SHADOW_FISSURE);
             }
 
             if (urand(0, 1))
@@ -618,7 +618,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, m_bIsRegularMode ? 1 : 0))
             {
                 m_creature->InterruptNonMeleeSpells(false);
-                DoCastSpellIfCanSpellIfCan(pTarget, SPELL_FROST_BLAST);
+                DoCastSpellIfCan(pTarget, SPELL_FROST_BLAST);
             }
 
             if (urand(0, 1))

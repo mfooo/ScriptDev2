@@ -18,7 +18,7 @@
 SDName: Boss_Grobbulus
 SDAuthor: ckegg && FallenangelX
 SD%Complete: 90
-SDComment: main poison attacks need a little fixing
+SDComment: main poison attacks need a little fixing // need to fix achievement 
 SDCategory: Naxxramas
 EndScriptData */
 
