@@ -242,7 +242,7 @@ void UpdateAI(const uint32 diff)
                 else DoCastSpellIfCan(enemy, info);
 
                 //Set our global cooldown
-                GlobalCooldown = GENERIC_CREATURE_COOLDOWN;
+                GlobalCooldown = CREATURE_COOLDOWN;
             }//end 50% change
             else m_creature->AttackerStateUpdate(m_creature->getVictim());
 
