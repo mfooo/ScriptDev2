@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -210,7 +210,7 @@ struct MANGOS_DLL_DECL boss_nothAI : public ScriptedAI
         if (!m_bIsRegularMode)
             if (Blink_Timer < diff)
             {
-                DoCast(m_creature->getVictim(), SPELL_CRIPPLE);
+                DoCastSpellIfCan(m_creature->getVictim(), SPELL_CRIPPLE);
                 uint8 uiRX = urand(0, 60);
                 uint8 uiRY = urand(0, 60);
                 m_creature->GetMap()->CreatureRelocation(m_creature, CENTER_X-30+uiRX, CENTER_Y-30+uiRY, CENTER_Z, 0);
@@ -229,7 +229,7 @@ struct MANGOS_DLL_DECL boss_nothAI : public ScriptedAI
         //Curse_Timer
         if (Curse_Timer < diff)
         {
-            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_CURSE_PLAGUEBRINGER : SPELL_CURSE_PLAGUEBRINGER_H);
+            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_CURSE_PLAGUEBRINGER : SPELL_CURSE_PLAGUEBRINGER_H);
             Curse_Timer = urand (25000, 30000);
         }
         else
@@ -271,7 +271,7 @@ struct MANGOS_DLL_DECL boss_nothAI : public ScriptedAI
                 }
                 else
                 {
-                    DoCast(m_creature, SPELL_BERSERK);
+                    DoCastSpellIfCan(m_creature, SPELL_BERSERK);
                     m_bIsEnraged = true;
                 }
             else

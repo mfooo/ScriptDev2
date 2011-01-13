@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,7 @@
 
 /* ScriptData
 SDName: Boss_Thaddius
-SDAuthor: ckegg
+SDAuthor: ckegg && FallenangelX
 SD%Complete: 0
 SDComment: Placeholder. Includes Feugen & Stalagg.
 SDCategory: Naxxramas
@@ -24,49 +24,51 @@ EndScriptData */
 
 #include "precompiled.h"
 #include "naxxramas.h"
+enum
+{
+    //Stalagg
+    SAY_STAL_AGGRO         = -1533023,
+    SAY_STAL_SLAY          = -1533024,
+    SAY_STAL_DEATH         = -1533025,
+    SPELL_POWERSURGE        = 28134,
+    H_SPELL_POWERSURGE      = 54529,
 
-//Stalagg
-#define SAY_STAL_AGGRO          -1533023
-#define SAY_STAL_SLAY           -1533024
-#define SAY_STAL_DEATH          -1533025
-#define SPELL_POWERSURGE           28134
-#define H_SPELL_POWERSURGE         54529
+    //Feugen
+    SAY_FEUG_AGGRO         = -1533026,
+    SAY_FEUG_SLAY          = -1533027,
+    SAY_FEUG_DEATH         = -1533028,
+    SPELL_STATICFIELD      = 28135,
+    H_SPELL_STATICFIELD    = 54528,
 
-//Feugen
-#define SAY_FEUG_AGGRO          -1533026
-#define SAY_FEUG_SLAY           -1533027
-#define SAY_FEUG_DEATH          -1533028
-#define SPELL_STATICFIELD          28135
-#define H_SPELL_STATICFIELD        54528
+    //both
+    SPELL_MAGNETIC_PULL       = 28337,
+    SPELL_WAR_STOMP           = 56427, // walkaround spell when adds are not on platforms
 
-//both
-#define SPELL_MAGNETIC_PULL        28337
-#define SPELL_WAR_STOMP            56427 // walkaround spell when adds are not on platforms
+    //Thaddus
+    SAY_AGGRO              = -1533029,
+    SAY_KILL1              = -1533031,
+    SAY_KILL2              = -1533032,
+    SAY_KILL3              = -1533033,
+    SAY_KILL4              = -1533034,
+    SAY_DEATH              = -1533035,
+    SAY_SCREAM1            = -1533036,
+    SAY_SCREAM2            = -1533037,
+    SAY_SCREAM3            = -1533038,
+    SAY_SCREAM4            = -1533039,
 
-//Thaddus
-#define SAY_AGGRO               -1533029
-#define SAY_KILL1               -1533031
-#define SAY_KILL2               -1533032
-#define SAY_KILL3               -1533033
-#define SAY_KILL4               -1533034
-#define SAY_DEATH               -1533035
-#define SAY_SCREAM1             -1533036
-#define SAY_SCREAM2             -1533037
-#define SAY_SCREAM3             -1533038
-#define SAY_SCREAM4             -1533039
+    SPELL_BALL_LIGHTNING                = 28299,
+    SPELL_CHAIN_LIGHTNING              = 28167,
+    H_SPELL_CHAIN_LIGHTNING            = 54531,
+    SPELL_BERSERK                      = 27680,
 
-#define SPELL_BALL_LIGHTNING                28299
-#define SPELL_CHAIN_LIGHTNING               28167
-#define H_SPELL_CHAIN_LIGHTNING             54531
-#define SPELL_BERSERK                       27680
-
-#define SPELL_POLARITY_SHIFT                28089
-#define SPELL_CHARGE_POSITIVE_ICON          28059
-#define SPELL_CHARGE_POSITIVE_DMG           28062
-#define SPELL_CHARGE_POSITIVE_BUFF          29659
-#define SPELL_CHARGE_NEGATIVE_ICON          28084
-#define SPELL_CHARGE_NEGATIVE_DMG           28085
-#define SPELL_CHARGE_NEGATIVE_BUFF          29660
+    SPELL_POLARITY_SHIFT               = 28089,
+    SPELL_CHARGE_POSITIVE_ICON         = 28059,
+    SPELL_CHARGE_POSITIVE_DMG          = 28062,
+    SPELL_CHARGE_POSITIVE_BUFF         = 29659,
+    SPELL_CHARGE_NEGATIVE_ICON         = 28084,
+	SPELL_CHARGE_NEGATIVE_DMG          = 28085,
+    SPELL_CHARGE_NEGATIVE_BUFF         = 29660
+};
 
 struct MANGOS_DLL_DECL boss_thaddiusAI : public ScriptedAI
 {
@@ -153,7 +155,7 @@ struct MANGOS_DLL_DECL boss_thaddiusAI : public ScriptedAI
                 m_creature->GetMotionMaster()->MoveChase(pWho);
         }
     }
-    
+
     void UpdateAI(const uint32 uiDiff)
     {
         if (!Activated || !m_creature->SelectHostileTarget() || !m_creature->getVictim())
@@ -198,13 +200,13 @@ struct MANGOS_DLL_DECL boss_thaddiusAI : public ScriptedAI
             }
             else
                 Activate_Timer -= uiDiff;
-            
+
             return;
         }
 
         if (Enrage_Timer < uiDiff)
         {
-            DoCast(m_creature, SPELL_BERSERK, true);
+            DoCastSpellIfCan(m_creature, SPELL_BERSERK, true);
             Enrage_Timer = 360000;
         }
         else
@@ -213,7 +215,7 @@ struct MANGOS_DLL_DECL boss_thaddiusAI : public ScriptedAI
         if (ChainLightning_Timer < uiDiff)
         {
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                DoCast(pTarget, m_bIsRegularMode ? SPELL_CHAIN_LIGHTNING : H_SPELL_CHAIN_LIGHTNING, true);
+                DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_CHAIN_LIGHTNING : H_SPELL_CHAIN_LIGHTNING, true);
             ChainLightning_Timer = 13000+rand()%4000;
         }
         else
@@ -223,7 +225,7 @@ struct MANGOS_DLL_DECL boss_thaddiusAI : public ScriptedAI
         {
             Unit* pTarget = m_creature->getVictim();
             if (pTarget && !pTarget->IsWithinDistInMap(m_creature, ATTACK_DISTANCE))
-                DoCast(m_creature->getVictim(), SPELL_BALL_LIGHTNING, true);
+                DoCastSpellIfCan(m_creature->getVictim(), SPELL_BALL_LIGHTNING, true);
 
             BallLightning_Timer = 1000;
         }
@@ -236,7 +238,7 @@ struct MANGOS_DLL_DECL boss_thaddiusAI : public ScriptedAI
             PolarityDmgAllowed = false;
             PolarityBeginDmg_Timer = 5000;
 
-            DoCast(m_creature, SPELL_POLARITY_SHIFT); // need core support
+            DoCastSpellIfCan(m_creature, SPELL_POLARITY_SHIFT); // need core support
 
             Map *map = m_creature->GetMap();
             if (map->IsDungeon())
@@ -296,7 +298,7 @@ struct MANGOS_DLL_DECL boss_thaddiusAI : public ScriptedAI
                 {
                     if (i->getSource()->isGameMaster())
                         continue;
-                    
+
                     Map::PlayerList const &PlayerList2 = map->GetPlayers();
 
                     if (PlayerList2.isEmpty())
@@ -495,7 +497,7 @@ struct MANGOS_DLL_DECL mob_stalaggAI : public ScriptedAI
 
         if (PowerSurge_Timer < uiDiff)
         {
-            DoCast(m_creature, m_bIsRegularMode ? SPELL_POWERSURGE : H_SPELL_POWERSURGE);
+            DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_POWERSURGE : H_SPELL_POWERSURGE);
             PowerSurge_Timer = 10000+rand()%10000;
         }
         else
@@ -526,11 +528,11 @@ struct MANGOS_DLL_DECL mob_stalaggAI : public ScriptedAI
         }
         else
             MagneticPull_Timer -= uiDiff;
-        
+
         if (Punish_Timer < uiDiff)
         {
             if (m_creature->GetDistance2d(HomeX, HomeY) > 30.0f)
-                DoCast(m_creature, SPELL_WAR_STOMP);
+                DoCastSpellIfCan(m_creature, SPELL_WAR_STOMP);
             Punish_Timer = 1000;
         }
         else
@@ -628,14 +630,14 @@ struct MANGOS_DLL_DECL mob_feugenAI : public ScriptedAI
 
         if (StaticField_Timer < uiDiff)
         {
-            DoCast(m_creature, m_bIsRegularMode ? SPELL_STATICFIELD : H_SPELL_STATICFIELD);
+            DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_STATICFIELD : H_SPELL_STATICFIELD);
             StaticField_Timer = 3000;
         }else StaticField_Timer -= uiDiff;
 
         if (Punish_Timer < uiDiff)
         {
             if (m_creature->GetDistance2d(HomeX, HomeY) > 30.0f)
-                DoCast(m_creature, SPELL_WAR_STOMP);
+                DoCastSpellIfCan(m_creature, SPELL_WAR_STOMP);
             Punish_Timer = 1000;
         }
         else

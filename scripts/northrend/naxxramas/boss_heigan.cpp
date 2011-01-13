@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,6 +16,7 @@
 
 /* ScriptData
 SDName: Boss_Heigan
+SD Author: FallenangelX
 SD%Complete: 0
 SDComment: Place Holder
 SDCategory: Naxxramas
@@ -24,25 +25,28 @@ EndScriptData */
 #include "precompiled.h"
 #include "naxxramas.h"
 
-#define SAY_AGGRO1          -1533109
-#define SAY_AGGRO2          -1533110
-#define SAY_AGGRO3          -1533111
-#define SAY_SLAY            -1533112
-#define SAY_TAUNT1          -1533113
-#define SAY_TAUNT2          -1533114
-#define SAY_TAUNT3          -1533115
-#define SAY_TAUNT4          -1533116
-#define SAY_TAUNT5          -1533117
-#define SAY_DEATH           -1533118
+enum
+{
+    SAY_AGGRO1         =  -1533109,
+    SAY_AGGRO2         = -1533110,
+    SAY_AGGRO3         = -1533111,
+    SAY_SLAY           = -1533112,
+    SAY_TAUNT1         = -1533113,
+    SAY_TAUNT2         = -1533114,
+    SAY_TAUNT3         = -1533115,
+    SAY_TAUNT4         = -1533116,
+    SAY_TAUNT5         = -1533117,
+    SAY_DEATH          = -1533118,
 
-//Spell used by floor peices to cause damage to players
-#define SPELL_ERUPTION      29371
+    //Spell used by floor peices to cause damage to players
+    SPELL_ERUPTION     = 29371,
 
-//Spells by boss
-#define SPELL_DISRUPTION    29310
-#define SPELL_FEAVER        29998
-#define H_SPELL_FEAVER      55011
-#define SPELL_PLAGUED_CLOUD 29350
+    //Spells by boss
+    SPELL_DISRUPTION    = 29310,
+    SPELL_FEAVER        = 29998,
+    H_SPELL_FEAVER      = 55011,
+    SPELL_PLAGUED_CLOUD = 29350
+};
 
 #define PLATFORM_X 2793.86f
 #define PLATFORM_Y -3707.38f
@@ -206,7 +210,7 @@ struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
         if (m_bDelay)
         {
             m_bDelay = false;
-            DoCast(m_creature, SPELL_PLAGUED_CLOUD);
+            DoCastSpellIfCan(m_creature, SPELL_PLAGUED_CLOUD);
         }
 
         if (Phase_Timer < diff)
@@ -281,13 +285,13 @@ struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
             }
         }
         else
-            Erupt_Timer -= diff; 
+            Erupt_Timer -= diff;
 
         if (m_bCombatPhase)
         {
             if (Disruption_Timer < diff)
             {
-                DoCast(m_creature, SPELL_DISRUPTION);
+                DoCastSpellIfCan(m_creature, SPELL_DISRUPTION);
                 Disruption_Timer = 10000;
             }
             else
@@ -296,7 +300,7 @@ struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
             if (Feaver_Timer < diff)
             {
                 if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                    DoCast(pTarget, m_bIsRegularMode ? SPELL_FEAVER : H_SPELL_FEAVER);
+                    DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_FEAVER : H_SPELL_FEAVER);
                 Feaver_Timer = 20000;
             }
             else

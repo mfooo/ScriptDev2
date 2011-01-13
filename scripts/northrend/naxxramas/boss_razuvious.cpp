@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -17,7 +17,8 @@
 /* ScriptData
 SDName: Boss_Razuvious
 SD%Complete: 75%
-SDComment: TODO: Timers and sounds need confirmation, implement spell Hopeless
+sd author: FallenangelX
+SDComment: TODO: need confirmation
 SDCategory: Naxxramas
 EndScriptData */
 
@@ -142,7 +143,7 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
         if (m_pInstance)
             m_pInstance->SetData(TYPE_RAZUVIOUS, DONE);
 
-        DoCast(m_creature, SPELL_HOPELESS, true);
+        DoCastSpellIfCan(m_creature, SPELL_HOPELESS, true);
     }
 
     void UpdateAI(const uint32 diff)
@@ -152,7 +153,7 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
 
         if (UnbalancingStrike_Timer < diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_UNBALANCING_STRIKE);
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_UNBALANCING_STRIKE);
             UnbalancingStrike_Timer = urand(7000, 8000);;
         }
         else
@@ -160,7 +161,7 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
 
         if (DisruptingShout_Timer < diff)
         {
-            DoCast(m_creature, m_bIsRegularMode ? SPELL_DISRUPTING_SHOUT : SPELL_DISRUPTING_SHOUT_H);
+            DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_DISRUPTING_SHOUT : SPELL_DISRUPTING_SHOUT_H);
             DisruptingShout_Timer = 15000;
         }
         else
@@ -169,7 +170,7 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
         if (JaggedKnife_Timer < diff)
         {
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                DoCast(pTarget, SPELL_JAGGED_KNIFE, true);
+                DoCastSpellIfCan(pTarget, SPELL_JAGGED_KNIFE, true);
             JaggedKnife_Timer = 10000;
         }
         else
@@ -203,12 +204,12 @@ CreatureAI* GetAI_boss_razuvious(Creature* pCreature)
 void AddSC_boss_razuvious()
 {
     Script* NewScript;
-    
+
     NewScript = new Script;
     NewScript->Name = "npc_obedience_crystal";
     NewScript->pGossipHello = &GossipHello_npc_obedience_crystal;
     NewScript->RegisterSelf();
-    
+
     NewScript = new Script;
     NewScript->Name = "boss_razuvious";
     NewScript->GetAI = &GetAI_boss_razuvious;

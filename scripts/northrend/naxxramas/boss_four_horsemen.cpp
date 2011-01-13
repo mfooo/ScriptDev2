@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -92,7 +92,7 @@ enum
     H_SPELL_HOLY_WRATH      = 57466,
     SPELL_HOLY_BOLT         = 57376,
     H_SPELL_HOLY_BOLT       = 57465,
-    SPELL_CONDEMNATION      = 57377, 
+    SPELL_CONDEMNATION      = 57377,
 };
 
 /*walk coords*/
@@ -107,7 +107,7 @@ enum
 #define WALKX_KORT                2529.108f
 #define WALKY_KORT                -3015.303f
 #define WALKZ_KORT                241.32f
-    
+
 #define WALKX_ZELI                2521.039f
 #define WALKY_ZELI                -2891.633f
 #define WALKZ_ZELI                241.276f
@@ -180,7 +180,7 @@ struct MANGOS_DLL_DECL boss_lady_blaumeuxAI : public ScriptedAI
     void JustDied(Unit* Killer)
     {
         DoScriptText(SAY_BLAU_DEATH, m_creature);
-        
+
         if (m_pInstance)
         {
             Creature* pZeliek = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_ZELIEK));
@@ -196,12 +196,12 @@ struct MANGOS_DLL_DECL boss_lady_blaumeuxAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim() ||
             m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
             return;
-        
+
         if (Mark_Count >= 100)
             if (Enrage_Timer < uiDiff)
             {
                 m_creature->InterruptNonMeleeSpells(false);
-                DoCast(m_creature, SPELL_BERSERK);
+                DoCastSpellIfCanSpellIfCan(m_creature, SPELL_BERSERK);
                 Enrage_Timer = 300000;
             }
             else
@@ -210,7 +210,7 @@ struct MANGOS_DLL_DECL boss_lady_blaumeuxAI : public ScriptedAI
         if (Mark_Timer < uiDiff)
         {
             m_creature->InterruptNonMeleeSpells(false);
-            DoCast(m_creature, SPELL_MARK_OF_BLAUMEUX);
+            DoCastSpellIfCanSpellIfCan(m_creature, SPELL_MARK_OF_BLAUMEUX);
             Mark_Timer = 12000;
             Mark_Count++;
         }
@@ -229,7 +229,7 @@ struct MANGOS_DLL_DECL boss_lady_blaumeuxAI : public ScriptedAI
                     if (pTarget && itr->getSource() && m_creature->GetDistance2d(itr->getSource()) < m_creature->GetDistance2d(pTarget))
                         pTarget = itr->getSource();
 
-                DoCast(pTarget, m_bIsRegularMode ? SPELL_VOIDZONE : H_SPELL_VOIDZONE);
+                DoCastSpellIfCanSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_VOIDZONE : H_SPELL_VOIDZONE);
             }
             VoidZone_Timer = 15000;
         }
@@ -248,9 +248,9 @@ struct MANGOS_DLL_DECL boss_lady_blaumeuxAI : public ScriptedAI
                         pTarget = itr->getSource();
 
                 if (pTarget && m_creature->GetDistance2d(pTarget)< 45.0f)
-                    DoCast(pTarget, m_bIsRegularMode ? SPELL_SHADOW_BOLT : H_SPELL_SHADOW_BOLT);
+                    DoCastSpellIfCanSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_SHADOW_BOLT : H_SPELL_SHADOW_BOLT);
                 else
-                    DoCast(m_creature, SPELL_UNYIELDING_PAIN);
+                    DoCastSpellIfCanSpellIfCan(m_creature, SPELL_UNYIELDING_PAIN);
             }
             ShadowBolt_Timer = 2000;
         }
@@ -282,7 +282,7 @@ struct MANGOS_DLL_DECL mob_void_zone_naxxAI : public ScriptedAI
         SetCombatMovement(false);
     }
 
-    void UpdateAI(const uint32 diff) 
+    void UpdateAI(const uint32 diff)
     {
         if (m_uiConsumptionTimer <= diff)
         {
@@ -377,12 +377,12 @@ struct MANGOS_DLL_DECL boss_sir_zeliekAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim() ||
             m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
             return;
-        
+
         if (Mark_Count >= 100)
             if (Enrage_Timer < uiDiff)
             {
                 m_creature->InterruptNonMeleeSpells(false);
-                DoCast(m_creature, SPELL_BERSERK);
+                DoCastSpellIfCan(m_creature, SPELL_BERSERK);
                 Enrage_Timer = 300000;
             }
             else
@@ -391,7 +391,7 @@ struct MANGOS_DLL_DECL boss_sir_zeliekAI : public ScriptedAI
         if (Mark_Timer < uiDiff)
         {
             m_creature->InterruptNonMeleeSpells(false);
-            DoCast(m_creature, SPELL_MARK_OF_ZELIEK);
+            DoCastSpellIfCan(m_creature, SPELL_MARK_OF_ZELIEK);
             Mark_Timer = 12000;
             Mark_Count++;
         }
@@ -410,7 +410,7 @@ struct MANGOS_DLL_DECL boss_sir_zeliekAI : public ScriptedAI
                     if (pTarget && itr->getSource() && m_creature->GetDistance2d(itr->getSource()) < m_creature->GetDistance2d(pTarget))
                         pTarget = itr->getSource();
 
-                DoCast(pTarget, m_bIsRegularMode ? SPELL_HOLY_WRATH : H_SPELL_HOLY_WRATH);
+                DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_HOLY_WRATH : H_SPELL_HOLY_WRATH);
             }
             HolyWrath_Timer = 15000;
         }
@@ -429,9 +429,9 @@ struct MANGOS_DLL_DECL boss_sir_zeliekAI : public ScriptedAI
                         pTarget = itr->getSource();
 
                 if (pTarget && m_creature->GetDistance2d(pTarget)< 45.0f)
-                    DoCast(pTarget, m_bIsRegularMode ? SPELL_HOLY_BOLT : H_SPELL_HOLY_BOLT);
+                    DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_HOLY_BOLT : H_SPELL_HOLY_BOLT);
                 else
-                    DoCast(m_creature, SPELL_CONDEMNATION);
+                    DoCastSpellIfCan(m_creature, SPELL_CONDEMNATION);
             }
             HolyBolt_Timer = 2000;
         }
@@ -539,7 +539,7 @@ struct MANGOS_DLL_DECL boss_rivendare_naxxAI : public ScriptedAI
         if (Mark_Count >= 100)
             if (Enrage_Timer < uiDiff)
             {
-                DoCast(m_creature, SPELL_BERSERK);
+                DoCastSpellIfCan(m_creature, SPELL_BERSERK);
                 Enrage_Timer = 300000;
             }
             else
@@ -547,7 +547,7 @@ struct MANGOS_DLL_DECL boss_rivendare_naxxAI : public ScriptedAI
 
         if (Mark_Timer < uiDiff)
         {
-            DoCast(m_creature, SPELL_MARK_OF_RIVENDARE);
+            DoCastSpellIfCan(m_creature, SPELL_MARK_OF_RIVENDARE);
             Mark_Timer = 12000;
             Mark_Count++;
         }
@@ -556,7 +556,7 @@ struct MANGOS_DLL_DECL boss_rivendare_naxxAI : public ScriptedAI
 
         if (UnholyShadow_Timer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_UNHOLY_SHADOW : H_SPELL_UNHOLY_SHADOW);
+            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_UNHOLY_SHADOW : H_SPELL_UNHOLY_SHADOW);
             UnholyShadow_Timer = 15000;
         }
         else
@@ -579,7 +579,7 @@ struct MANGOS_DLL_DECL boss_thane_korthazzAI : public ScriptedAI
     bool m_bIsRegularMode;
 
     bool IsMovingToCorner;
-    
+
     uint32 Mark_Timer;
     uint32 Mark_Count;
     uint32 Meteor_Timer;
@@ -641,7 +641,7 @@ struct MANGOS_DLL_DECL boss_thane_korthazzAI : public ScriptedAI
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
-        
+
         if (IsMovingToCorner)
         {
             if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != POINT_MOTION_TYPE)
@@ -656,7 +656,7 @@ struct MANGOS_DLL_DECL boss_thane_korthazzAI : public ScriptedAI
         if (Mark_Count >= 100)
             if (Enrage_Timer < uiDiff)
             {
-                DoCast(m_creature, SPELL_BERSERK);
+                DoCastSpellIfCan(m_creature, SPELL_BERSERK);
                 Enrage_Timer = 300000;
             }
             else
@@ -664,7 +664,7 @@ struct MANGOS_DLL_DECL boss_thane_korthazzAI : public ScriptedAI
 
         if (Mark_Timer < uiDiff)
         {
-            DoCast(m_creature, SPELL_MARK_OF_KORTHAZZ);
+            DoCastSpellIfCan(m_creature, SPELL_MARK_OF_KORTHAZZ);
             Mark_Timer = 12000;
             Mark_Count++;
         }
@@ -673,7 +673,7 @@ struct MANGOS_DLL_DECL boss_thane_korthazzAI : public ScriptedAI
 
         if (Meteor_Timer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_METEOR : H_SPELL_METEOR);
+            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_METEOR : H_SPELL_METEOR);
             Meteor_Timer = 15000;
         }
         else

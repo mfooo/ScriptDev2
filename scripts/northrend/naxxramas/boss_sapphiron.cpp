@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,6 +16,7 @@
 
 /* ScriptData
 SDName: Boss_Sapphiron
+SD author: i believe insider42
 SD%Complete: 0
 SDComment: Place Holder
 SDCategory: Naxxramas
@@ -136,7 +137,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
 
     void Aggro(Unit* pWho)
     {
-        DoCast(m_creature, m_bIsRegularMode ? SPELL_FROST_AURA : SPELL_FROST_AURA_H, true);
+        DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_FROST_AURA : SPELL_FROST_AURA_H, true);
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_SAPPHIRON, IN_PROGRESS);
@@ -148,7 +149,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
             m_pInstance->SetData(TYPE_SAPPHIRON, DONE);
 
         m_creature->CastSpell(m_creature, SPELL_DIES, true);
- 
+
         Map *map = m_creature->GetMap();
         if (map && map->IsDungeon())
         {
@@ -191,7 +192,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                 {
                     //DoScriptText(EMOTE_BREATH, m_creature);
                     m_creature->MonsterTextEmote("Sapphiron takes a deep breath.", NULL, true);
-                    DoCast(m_creature, SPELL_FROST_BREATH_BALL);
+                    DoCastSpellIfCan(m_creature, SPELL_FROST_BREATH_BALL);
                     m_creature->SetHover(true);
                     FrostBreath_Timer = 6900;
                 }
@@ -232,7 +233,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                 for (uint8 i = 1; i <= 13; ++i)
                     if (m_pInstance->GetData(i) != DONE)
                         return;
-             
+
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 m_creature->SetVisibility(VISIBILITY_ON);
             }
@@ -243,7 +244,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
         if (Berserk_Timer < diff)
         {
             DoScriptText(EMOTE_ENRAGE, m_creature);
-            DoCast(m_creature, SPELL_BERSERK);
+            DoCastSpellIfCan(m_creature, SPELL_BERSERK);
             Berserk_Timer = 300000;
         }
         else
@@ -262,7 +263,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
             }
             else
                 LandingDelay_Timer -= diff;
-        
+
             return;
         }
 
@@ -270,7 +271,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
         {
             if (LifeDrain_Timer < diff)
             {
-                DoCast(m_creature, m_bIsRegularMode ? SPELL_LIFE_DRAIN : SPELL_LIFE_DRAIN_H);
+                DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_LIFE_DRAIN : SPELL_LIFE_DRAIN_H);
                 LifeDrain_Timer = 24000;
             }
             else
@@ -278,7 +279,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
 
             if (m_uiCleaveTimer < diff)
             {
-                DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+                DoCastSpellIfCan(m_creature->getVictim(), SPELL_CLEAVE);
                 m_uiCleaveTimer = urand(10000, 15000);
             }
             else
@@ -286,7 +287,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
 
             if (m_uiTailSweepTimer < diff)
             {
-                DoCast(m_creature, m_bIsRegularMode ? SPELL_TAIL_SWEEP : SPELL_TAIL_SWEEP_H);
+                DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_TAIL_SWEEP : SPELL_TAIL_SWEEP_H);
                 m_uiTailSweepTimer = urand(10000, 15000);
             }
             else
@@ -295,7 +296,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
             if (Blizzard_Timer < diff)
             {
                 if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                    DoCast(target, m_bIsRegularMode ? SPELL_BLIZZARD : SPELL_BLIZZARD_H);
+                    DoCastSpellIfCan(target, m_bIsRegularMode ? SPELL_BLIZZARD : SPELL_BLIZZARD_H);
 
                 Blizzard_Timer = 3500;
             }
@@ -320,7 +321,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
             if (Icebolt_Count < uint8(m_bIsRegularMode ? 2 : 3) && Icebolt_Timer < diff)
             {
                 if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                    DoCast(target, SPELL_ICEBOLT);
+                    DoCastSpellIfCan(target, SPELL_ICEBOLT);
 
                 m_creature->SetHover(true);
                 ++Icebolt_Count;
@@ -331,7 +332,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
 
             /*if (WingBuffet_Timer < diff)
             {
-                DoCast(m_creature, SPELL_WING_BUFFET);
+                DoCastSpellIfCan(m_creature, SPELL_WING_BUFFET);
                 m_creature->SetHover(true);
                 WingBuffet_Timer = 2000;
             }
@@ -358,7 +359,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
 
                                         for (std::list<Unit*>::const_iterator i = IceBlockTargets.begin(); i != IceBlockTargets.end(); ++i)
                                         {
-                                            if (IsInBetween(*i, m_creature, itr->getSource(), 3.0f) && 
+                                            if (IsInBetween(*i, m_creature, itr->getSource(), 3.0f) &&
                                                 m_creature->GetDistance2d(itr->getSource()->GetPositionX(), itr->getSource()->GetPositionY()) - m_creature->GetDistance2d((*i)->GetPositionX(), (*i)->GetPositionY()) < 5.0f)
                                                 itr->getSource()->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, true);
                                                 (*i)->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, true);
@@ -372,7 +373,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                     }
                     case 2:
                     {
-                        DoCast(m_creature, SPELL_FROST_BREATH);
+                        DoCastSpellIfCan(m_creature, SPELL_FROST_BREATH);
                         FrostBreath_Phase = 3;
                         FrostBreath_Timer = 100;
                         break;

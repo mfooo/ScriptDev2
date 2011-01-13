@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -68,7 +68,7 @@ struct MANGOS_DLL_DECL mob_zombie_chowsAI : public ScriptedAI
             //Make sure our attack is ready and we aren't currently casting
             if (m_creature->isAttackReady() && !m_creature->IsNonMeleeSpellCasted(false))
             {
-                DoCast(m_creature->getVictim(), SPELL_INFECTED_WOUND, true);
+                DoCastSpellIfCan(m_creature->getVictim(), SPELL_INFECTED_WOUND, true);
                 m_creature->AttackerStateUpdate(m_creature->getVictim());
                 m_creature->resetAttackTimer();
             }
@@ -174,7 +174,7 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
         //MortalWound_Timer
         if (MortalWound_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MORTALWOUND);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_MORTALWOUND);
             MortalWound_Timer = 10000;
         }else MortalWound_Timer -= diff;
 
@@ -182,7 +182,7 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
         if (Decimate_Timer < diff)
         {
             m_creature->MonsterTextEmote("Gluth decimates all nearby flesh!", 0, true);
-            DoCast(m_creature->getVictim(), SPELL_DECIMATE); // need core support
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_DECIMATE); // need core support
 
             // workaround below
             std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList();
@@ -217,7 +217,7 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
         if (Enrage_Timer < diff)
         {
             m_creature->MonsterTextEmote("Gluth becomes enraged!", 0, true);
-            DoCast(m_creature, m_bIsRegularMode ? SPELL_ENRAGE : SPELL_ENRAGE_H);
+            DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_ENRAGE : SPELL_ENRAGE_H);
             Enrage_Timer = 30000;
         }else Enrage_Timer -= diff;
 
@@ -257,7 +257,7 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
         //m_uiBerserkTimer
         if (m_uiBerserkTimer < diff)
         {
-            DoCast(m_creature, SPELL_BERSERK, true);
+            DoCastSpellIfCan(m_creature, SPELL_BERSERK, true);
             m_uiBerserkTimer = MINUTE*5*IN_MILLISECONDS;
         }else m_uiBerserkTimer -= diff;
 

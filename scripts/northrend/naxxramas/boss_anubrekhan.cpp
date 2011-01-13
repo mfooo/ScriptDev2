@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -195,7 +195,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
 
         if (m_uiBerserkTimer < uiDiff)
         {
-            DoCast(m_creature, SPELL_BERSERK);
+            DoCastSpellIfCan(m_creature, SPELL_BERSERK);
             m_uiBerserkTimer = 300000;
         }
         else
@@ -205,7 +205,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
             if (m_uiImpaleDelayTimer <= uiDiff)
             {
                 if (!m_bIsRegularMode)
-                    DoCast(m_pImpaleVictim, SPELL_IMPALE_H);
+                    DoCastSpellIfCan(m_pImpaleVictim, SPELL_IMPALE_H);
                 if (m_pImpaleVictim)
                     m_creature->getThreatManager().addThreat(m_pImpaleVictim, -100000000.0f);
                 m_uiImpaleDelayTimer = 0;
@@ -231,7 +231,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
                         m_uiImpaleDelayTimer = 100;
                     else
                     {
-                        DoCast(m_pImpaleVictim, SPELL_IMPALE);
+                        DoCastSpellIfCan(m_pImpaleVictim, SPELL_IMPALE);
                         m_uiImpaleDelayTimer = 1100;
                     }
                 }
@@ -246,7 +246,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         if (m_uiLocustSwarmTimer < uiDiff)
         {
             m_creature->MonsterTextEmote("%s begins to unleash an insect swarm!", 0, true);
-            DoCast(m_creature, m_bIsRegularMode ? SPELL_LOCUSTSWARM : SPELL_LOCUSTSWARM_H);
+            DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_LOCUSTSWARM : SPELL_LOCUSTSWARM_H);
             m_uiLocustSwarmTimer = urand(70000, 120000);
             m_bSummonGuard = true;
             m_uiSummonTimer = 3000;
@@ -334,7 +334,7 @@ struct MANGOS_DLL_DECL mob_crypt_guardAI : public ScriptedAI
         if (m_uiBerserkTimer)
             if (m_uiBerserkTimer < uiDiff)
             {
-                DoCast(m_creature, SPELL_FRENZY);
+                DoCastSpellIfCan(m_creature, SPELL_FRENZY);
                 m_uiBerserkTimer = 0;
             }
             else
@@ -342,7 +342,7 @@ struct MANGOS_DLL_DECL mob_crypt_guardAI : public ScriptedAI
 
         if (m_uiAcidSpitTimer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_ACID_SPIT : SPELL_ACID_SPIT_H);
+            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_ACID_SPIT : SPELL_ACID_SPIT_H);
             m_uiAcidSpitTimer = 10000 + rand()%1000;
         }
         else
@@ -350,7 +350,7 @@ struct MANGOS_DLL_DECL mob_crypt_guardAI : public ScriptedAI
 
         if (m_uiCleaveTimer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_CLEAVE);
             m_uiCleaveTimer = 5000 + rand()%5000;
         }
         else

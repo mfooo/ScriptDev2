@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -97,7 +97,7 @@ struct MANGOS_DLL_DECL boss_loathebAI : public ScriptedAI
 
         if (Deathbloom_Timer < diff)
         {
-            DoCast(m_creature, m_bIsRegularMode ? SPELL_DEATHBLOOM : SPELL_DEATHBLOOM_H);
+            DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_DEATHBLOOM : SPELL_DEATHBLOOM_H);
             Deathbloom_Timer = 30000;
         }
         else
@@ -106,7 +106,7 @@ struct MANGOS_DLL_DECL boss_loathebAI : public ScriptedAI
         if (NecroticAura_Timer < diff)
         {
             m_creature->MonsterTextEmote("An aura of necrotic energy blocks all healing!", 0, true);
-            DoCast(m_creature, SPELL_NECROTIC_AURA);
+            DoCastSpellIfCan(m_creature, SPELL_NECROTIC_AURA);
             NecroticAura_Timer = 20000;
         }
         else
@@ -114,7 +114,7 @@ struct MANGOS_DLL_DECL boss_loathebAI : public ScriptedAI
 
         if (InevitableDoom_Timer < diff)
         {
-            DoCast(m_creature, SPELL_INEVITABLE_DOOM);
+            DoCastSpellIfCan(m_creature, SPELL_INEVITABLE_DOOM);
             InevitableDoom_Count++;
             if (InevitableDoom_Count < 7)
                 InevitableDoom_Timer = 30000;
@@ -137,7 +137,7 @@ struct MANGOS_DLL_DECL boss_loathebAI : public ScriptedAI
 
         if (Enrage_Timer < diff)
         {
-            DoCast(m_creature, SPELL_BERSERK);
+            DoCastSpellIfCan(m_creature, SPELL_BERSERK);
             Enrage_Timer = 300000;
         }
         else

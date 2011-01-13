@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -474,7 +474,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
 
         if (m_uiFrostBoltTimer < uiDiff)
         {
-            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FROST_BOLT : SPELL_FROST_BOLT_H);
+            DoCastSpellIfCanSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FROST_BOLT : SPELL_FROST_BOLT_H);
             m_uiFrostBoltTimer = urand(2000, 30000);
         }
         else
@@ -482,7 +482,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
 
         if (m_uiFrostBoltNovaTimer < uiDiff)
         {
-            DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_FROST_BOLT_NOVA : SPELL_FROST_BOLT_NOVA_H);
+            DoCastSpellIfCanSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_FROST_BOLT_NOVA : SPELL_FROST_BOLT_NOVA_H);
             m_uiFrostBoltNovaTimer = 15000;
         }
         else
@@ -516,8 +516,8 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                     m_uiChainsTargetsCastTimer = 3500;
                     DoResetThreat();
                 }
-                
-                //DoCastSpellIfCan(pTarget, SPELL_CHAINS_OF_KELTHUZAD);
+
+                //DoCastSpellIfCanSpellIfCan(pTarget, SPELL_CHAINS_OF_KELTHUZAD);
 
                 DoScriptText(urand(0, 1) ? SAY_CHAIN1 : SAY_CHAIN2, m_creature);
 
@@ -538,7 +538,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                         (*itr)->CastCustomSpell(m_creature, 36983, &amount, NULL, NULL, false);
                     }
                 }
-    
+
                 m_uiChainsTargetsCastTimer = 4500;
             }
             else
@@ -586,7 +586,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
             if (pTarget)
             {
                 m_creature->InterruptNonMeleeSpells(false);
-                DoCastSpellIfCan(pTarget, SPELL_MANA_DETONATION);
+                DoCastSpellIfCanSpellIfCan(pTarget, SPELL_MANA_DETONATION);
             }
 
             if (urand(0, 1))
@@ -602,7 +602,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
             {
                 m_creature->InterruptNonMeleeSpells(false);
-                DoCastSpellIfCan(pTarget, SPELL_SHADOW_FISSURE);
+                DoCastSpellIfCanSpellIfCan(pTarget, SPELL_SHADOW_FISSURE);
             }
 
             if (urand(0, 1))
@@ -618,7 +618,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, m_bIsRegularMode ? 1 : 0))
             {
                 m_creature->InterruptNonMeleeSpells(false);
-                DoCastSpellIfCan(pTarget, SPELL_FROST_BLAST);
+                DoCastSpellIfCanSpellIfCan(pTarget, SPELL_FROST_BLAST);
             }
 
             if (urand(0, 1))

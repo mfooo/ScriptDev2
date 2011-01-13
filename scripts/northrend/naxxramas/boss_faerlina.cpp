@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -153,7 +153,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         if (m_uiPoisonBoltVolleyTimer < uiDiff)
         {
             if (!m_creature->HasAura(SPELL_WIDOWS_EMBRACE))
-                DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_POSIONBOLT_VOLLEY : H_SPELL_POSIONBOLT_VOLLEY);
+                DoCastSpellIfCanSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_POSIONBOLT_VOLLEY : H_SPELL_POSIONBOLT_VOLLEY);
             m_uiPoisonBoltVolleyTimer = urand(14000, 15000);
         }
         else
@@ -163,7 +163,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         if (m_uiRainOfFireTimer < uiDiff)
         {
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                DoCast(pTarget, m_bIsRegularMode ? SPELL_RAINOFFIRE : H_SPELL_RAINOFFIRE);
+                DoCastSpellIfCanSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_RAINOFFIRE : H_SPELL_RAINOFFIRE);
 
             m_uiRainOfFireTimer = urand(6000, 8000);
         }
@@ -180,7 +180,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
                 case 2: DoScriptText(SAY_ENRAGE3, m_creature); break;
             }
             m_creature->MonsterTextEmote("%s goes into a frenzy!", 0, true);
-            DoCast(m_creature, m_bIsRegularMode ? SPELL_FRENZY : H_SPELL_FRENZY);
+            DoCastSpellIfCanSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_FRENZY : H_SPELL_FRENZY);
             m_uiEnrageTimer = urand(60000, 80000);
         }
         else
@@ -245,7 +245,7 @@ struct MANGOS_DLL_DECL mob_worshipperAI : public ScriptedAI
 
         if (m_uiFireball_Timer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FIREBALL : SPELL_FIREBALL_H);
+            DoCastSpellIfCanSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FIREBALL : SPELL_FIREBALL_H);
             m_uiFireball_Timer = 5000 + rand()%3000;
         }
         else

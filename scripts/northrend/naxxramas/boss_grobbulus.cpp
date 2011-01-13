@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,28 +16,34 @@
 
 /* ScriptData
 SDName: Boss_Grobbulus
-SDAuthor: ckegg
-SD%Complete: 0
-SDComment: Place holder
+SDAuthor: ckegg && FallenangelX
+SD%Complete: 90
+SDComment: main poison attacks need a little fixing
 SDCategory: Naxxramas
 EndScriptData */
 
 #include "precompiled.h"
 #include "naxxramas.h"
 
-#define SPELL_BOMBARD_SLIME         28280
+enum
+{
+    SPELL_BOMBARD_SLIME        = 28280,
+    SPELL_POISON_CLOUD         = 28240,
+    SPELL_MUTATING_INJECTION   = 28169,
+    SPELL_SLIME_SPRAY          = 28157,
+    H_SPELL_SLIME_SPRAY        = 54364,
+    SPELL_BERSERK              = 26662,
 
-#define SPELL_POISON_CLOUD          28240
-#define SPELL_MUTATING_INJECTION    28169
-#define SPELL_SLIME_SPRAY           28157
-#define H_SPELL_SLIME_SPRAY         54364
-#define SPELL_BERSERK               26662
+    MOB_FALLOUT_SLIME          = 16290,
+    MOB_GROBBULUS_POISON_CLOUD = 16363,
 
-#define MOB_FALLOUT_SLIME           16290
-#define MOB_GROBBULUS_POISON_CLOUD  16363
+    SPELL_POISON_CLOUD_HACK    = 30914,
+    SPELL_AOE_NATURE_DMG       = 30915,
 
-#define SPELL_POISON_CLOUD_HACK     30914
-#define SPELL_AOE_NATURE_DMG        30915
+	//achievements
+    GROBBULUS_DEAD             = 1371,
+    GROBBULUS_DEAD_H           = 1381
+};
 
 struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
 {
@@ -74,6 +80,13 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
     {
         if (m_pInstance)
             m_pInstance->SetData(TYPE_GROBBULUS, DONE);
+
+
+        if (!m_bIsRegularMode)
+        {
+           if(!m_pInstance)
+               m_pInstance->DoCompleteAchievement(m_bIsRegularMode ? GROBBULUS_DEAD : GROBBULUS_DEAD_H);
+        }
     }
 
     void Aggro(Unit *who)
@@ -102,7 +115,7 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
 
         if (PoisonCloud_Timer < diff)
         {
-            //DoCast(m_creature->getVictim(), SPELL_POISON_CLOUD);
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_POISON_CLOUD);
             DoSpawnCreature(MOB_GROBBULUS_POISON_CLOUD, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN, 120000);
             PoisonCloud_Timer = 15000;
         }else PoisonCloud_Timer -= diff;
@@ -110,7 +123,7 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
         if (MutatingInjection_Timer < diff)
         {
             if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                DoCast(target, SPELL_MUTATING_INJECTION);
+                DoCastSpellIfCan(target, SPELL_MUTATING_INJECTION);
 
             MutatingInjection_Timer = 20000;
             float fPercentHealth = m_creature->GetHealth() / m_creature->GetMaxHealth() * 100;
@@ -128,7 +141,7 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
 
         if (SlimeSpary_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),m_bIsRegularMode ? SPELL_SLIME_SPRAY : H_SPELL_SLIME_SPRAY);
+            DoCastSpellIfCan(m_creature->getVictim(),m_bIsRegularMode ? SPELL_SLIME_SPRAY : H_SPELL_SLIME_SPRAY);
             SlimeSpary_Timer = 15000+rand()%10000;
         }
         else
@@ -136,7 +149,7 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
 
         if (Enrage_Timer < diff)
         {
-            DoCast(m_creature, SPELL_BERSERK);
+            DoCastSpellIfCan(m_creature, SPELL_BERSERK);
             Enrage_Timer = 300000;
         }
         else

@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -17,6 +17,7 @@
 /* ScriptData
 SDName: Boss_Maexxna
 SD%Complete: 60
+SD author:FallenangelX
 SDComment: this needs review, and rewrite of the webwrap ability
 SDCategory: Naxxramas
 EndScriptData */
@@ -24,19 +25,21 @@ EndScriptData */
 #include "precompiled.h"
 #include "naxxramas.h"
 
-#define SPELL_WEBWRAP           28622                       //Spell is normally used by the webtrap on the wall NOT by Maexxna
+enum
+{
+    SPELL_WEBWRAP          = 28622,                       //Spell is normally used by the webtrap on the wall NOT by Maexxna
+    SPELL_WEBSPRAY         = 29484,
+    H_SPELL_WEBSPRAY       = 54125,
+    SPELL_POISONSHOCK      = 28741,
+    H_SPELL_POISONSHOCK    = 54122,
+    SPELL_NECROTICPOISON   = 54121,
+    H_SPELL_NECROTICPOISON = 28776,
+    SPELL_FRENZY           = 54123,
+    H_SPELL_FRENZY         = 54124,
 
-#define SPELL_WEBSPRAY          29484
-#define H_SPELL_WEBSPRAY        54125
-#define SPELL_POISONSHOCK       28741
-#define H_SPELL_POISONSHOCK     54122
-#define SPELL_NECROTICPOISON    54121
-#define H_SPELL_NECROTICPOISON  28776
-#define SPELL_FRENZY            54123
-#define H_SPELL_FRENZY          54124
-
-#define NPC_MAEXXNA_SPIDERLING  17055
-#define NPC_WEB_WRAP            16486
+    NPC_MAEXXNA_SPIDERLING = 17055,
+	NPC_WEB_WRAP           = 16486
+};
 
 #define LOC_X1                  3546.796f
 #define LOC_Y1                  -3869.082f
@@ -135,7 +138,7 @@ struct MANGOS_DLL_DECL boss_maexxnaAI : public ScriptedAI
             m_pInstance->SetData(TYPE_MAEXXNA, IN_PROGRESS);
     }
 
-    void DoCastWebWrap()
+    void DoCastSpellIfCanWebWrap()
     {
         float LocX, LocY, LocZ;
         switch(rand()%3)
@@ -189,9 +192,9 @@ struct MANGOS_DLL_DECL boss_maexxnaAI : public ScriptedAI
         if (WebWrap_Timer < diff)
         {
             m_creature->MonsterTextEmote("%s spins her web into a cocoon!", 0, true);
-            DoCastWebWrap();
+            DoCastSpellIfCanWebWrap();
             if (!m_bIsRegularMode)
-                DoCastWebWrap();
+                DoCastSpellIfCanWebWrap();
             WebWrap_Timer = 40000;
         }else WebWrap_Timer -= diff;
 
@@ -199,21 +202,21 @@ struct MANGOS_DLL_DECL boss_maexxnaAI : public ScriptedAI
         if (WebSpray_Timer < diff)
         {
             m_creature->MonsterTextEmote("%s sprays strands of web everywhere!", 0, true);
-            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_WEBSPRAY : H_SPELL_WEBSPRAY);
+            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_WEBSPRAY : H_SPELL_WEBSPRAY);
             WebSpray_Timer = 40000;
         }else WebSpray_Timer -= diff;
 
         //PoisonShock_Timer
         if (PoisonShock_Timer < diff)
         {
-            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_POISONSHOCK : H_SPELL_POISONSHOCK);
+            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_POISONSHOCK : H_SPELL_POISONSHOCK);
             PoisonShock_Timer = 10000;
         }else PoisonShock_Timer -= diff;
 
         //NecroticPoison_Timer
         if (NecroticPoison_Timer < diff)
         {
-            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_NECROTICPOISON : H_SPELL_NECROTICPOISON);
+            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_NECROTICPOISON : H_SPELL_NECROTICPOISON);
             NecroticPoison_Timer = 30000;
         }else NecroticPoison_Timer -= diff;
 
@@ -223,7 +226,7 @@ struct MANGOS_DLL_DECL boss_maexxnaAI : public ScriptedAI
             m_creature->MonsterTextEmote("Spiderlings appear on the web!", 0, true);
             for (uint8 i = 0; i < 8; ++i)
                 if (Creature* pSpiderling = DoSpawnCreature(NPC_MAEXXNA_SPIDERLING, urand(0, 5), urand(0, 5), 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000))
-                    if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))                  
+                    if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                         pSpiderling->AI()->AttackStart(pTarget);
 
             SummonSpiderling_Timer = 40000;
@@ -232,7 +235,7 @@ struct MANGOS_DLL_DECL boss_maexxnaAI : public ScriptedAI
         //Enrage if not already enraged and below 30%
         if (!Enraged && (m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 30)
         {
-            DoCast(m_creature, m_bIsRegularMode ? SPELL_FRENZY : H_SPELL_FRENZY);
+            DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_FRENZY : H_SPELL_FRENZY);
             Enraged = true;
         }
 

@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,7 @@
 
 /* ScriptData
 SDName: Boss_Gothik
-SDAuthor: ckegg
+SDAuthor: ckegg && FallenangelX
 SD%Complete: 0
 SDComment:
 SDCategory: Naxxramas
@@ -25,23 +25,26 @@ EndScriptData */
 #include "precompiled.h"
 #include "naxxramas.h"
 
-#define SAY_SPEECH                  -1533040
-#define SAY_KILL                    -1533041
-#define SAY_DEATH                   -1533042
-#define SAY_TELEPORT                -1533043
+enum
+{
+    SAY_SPEECH               = -1533040,
+    SAY_KILL                 = -1533041,
+    SAY_DEATH                = -1533042,
+    SAY_TELEPORT             = -1533043,
 
-//Gothik
-#define SPELL_HARVESTSOUL           28679
-#define SPELL_SHADOWBOLT            29317
-#define H_SPELL_SHADOWBOLT          56405
+   //Gothik
+   SPELL_HARVESTSOUL         = 28679,
+   SPELL_SHADOWBOLT          = 29317,
+   H_SPELL_SHADOWBOLT        = 56405,
 
-#define MOB_LIVE_TRAINEE    16124
-#define MOB_LIVE_KNIGHT     16125
-#define MOB_LIVE_RIDER      16126
-#define MOB_DEAD_TRAINEE    16127
-#define MOB_DEAD_KNIGHT     16148
-#define MOB_DEAD_RIDER      16150
-#define MOB_DEAD_HORSE      16149
+   MOB_LIVE_TRAINEE    = 16124,
+   MOB_LIVE_KNIGHT     = 16125,
+   MOB_LIVE_RIDER      = 16126,
+   MOB_DEAD_TRAINEE    = 16127,
+   MOB_DEAD_KNIGHT     = 16148,
+   MOB_DEAD_RIDER      = 16150,
+   MOB_DEAD_HORSE      = 16149
+};
 
 #define POS_LIVE 3
 #define POS_DEAD 5
@@ -202,7 +205,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
         {
             if (HarvestSoul_Timer < diff)
             {
-                DoCast(m_creature->getVictim(), SPELL_HARVESTSOUL);
+                DoCastSpellIfCan(m_creature->getVictim(), SPELL_HARVESTSOUL);
                 HarvestSoul_Timer = 15000;
             }
             else
@@ -210,7 +213,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
 
             if (ShadowBolt_Timer < diff)
             {
-                DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_SHADOWBOLT : H_SPELL_SHADOWBOLT);
+                DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_SHADOWBOLT : H_SPELL_SHADOWBOLT);
                 ShadowBolt_Timer = 1000;
             }
             else
