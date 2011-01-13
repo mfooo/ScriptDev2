@@ -17,7 +17,8 @@
 /* ScriptData
 SDName: Boss_Patchwerk
 SD%Complete: 80
-SDComment: TODO: confirm how hateful strike work
+SDComment:   
+TODO: confirm how hateful strike work  //Hateful strike (deals 30k raw dmg too one of the top 3 on his top aggro list  can be parried dodged mitigated)
 SDCategory: Naxxramas
 EndScriptData */
 
@@ -38,7 +39,11 @@ enum
     SPELL_HATEFULSTRIKE_H = 59192,
     SPELL_ENRAGE          = 28131,
     SPELL_BERSERK         = 26662,
-    SPELL_SLIMEBOLT       = 32309
+    SPELL_SLIMEBOLT       = 32309,
+
+	// achievement
+    MAKE_QUICK_WERK_OF_HIM    = 1856,  // (10man)
+	MAKE_QUICK_WERK_OF_HIM_H  = 1857
 };
 
 const float MELEE_DISTANCE = 5.0;
@@ -58,6 +63,7 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
     uint32 m_uiHatefulStrikeTimer;
     uint32 m_uiBerserkTimer;
     uint32 m_uiSlimeboltTimer;
+    uint32 uiEncounterTimer;
     bool   m_bEnraged;
     bool   m_bBerserk;
 
@@ -66,6 +72,7 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
         m_uiHatefulStrikeTimer = 1000;                      //1 second
         m_uiBerserkTimer = MINUTE*6*IN_MILLISECONDS;         //6 minutes
         m_uiSlimeboltTimer = 10000;
+        uiEncounterTimer        = 0;
         m_bEnraged = false;
         m_bBerserk = false;
     }
@@ -90,6 +97,12 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_PATCHWERK, DONE);
+			
+        if (uiEncounterTimer < 179999)
+        {
+            if(m_pInstance)
+                m_pInstance->DoCompleteAchievement(m_bIsRegularMode ? MAKE_QUICK_WERK_OF_HIM : MAKE_QUICK_WERK_OF_HIM_H);
+        }
     }
 
     void Aggro(Unit* pWho)
@@ -133,6 +146,9 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
+
+        // Achiev timer
+        uiEncounterTimer += uiDiff;
 
         // Hateful Strike
         if (m_uiHatefulStrikeTimer < uiDiff)
