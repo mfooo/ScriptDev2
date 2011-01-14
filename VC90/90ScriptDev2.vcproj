@@ -407,6 +407,10 @@
 					RelativePath="..\scripts\battlegrounds\battleground.cpp"
 					>
 				</File>
+                <File
+					RelativePath="..\scripts\battlegrounds\battlegroundSA.cpp"
+					>
+                </File>
 				<Filter
 					Name="alterac_valley"
 					>

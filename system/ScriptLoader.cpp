@@ -10,6 +10,7 @@ extern void AddSC_boss_balinda();                       // alterac valley
 extern void AddSC_boss_drekthar();
 extern void AddSC_boss_galvangar();
 extern void AddSC_boss_vanndar();
+extern void AddSC_battlegroundSA();
 
 //Guards
 extern void AddSC_ancient_of_war();
@@ -570,6 +571,7 @@ void AddScripts()
     AddSC_boss_drekthar();
     AddSC_boss_galvangar();
     AddSC_boss_vanndar();
+    AddSC_battlegroundSA();
 
     //custom
     AddSC_custom_gameobjects();
