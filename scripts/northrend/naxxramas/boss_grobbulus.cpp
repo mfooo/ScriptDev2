@@ -61,12 +61,14 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
     uint32 MutatingInjection_Timer;
     uint32 SlimeSpary_Timer;
     uint32 Enrage_Timer;
+	uint32 uiEncounterTimer;
 
     void Reset()
     {
         PoisonCloud_Timer = 15000;
         MutatingInjection_Timer = 20000;
         SlimeSpary_Timer = 15000+rand()%10000;
+		uiEncounterTimer        = 0;
         Enrage_Timer = (m_bIsRegularMode ? 720000 : 540000);
     }
 
@@ -82,10 +84,10 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
             m_pInstance->SetData(TYPE_GROBBULUS, DONE);
 
 
-        if (!m_bIsRegularMode)
+        if (uiEncounterTimer < 9999999)
         {
-           if(!m_pInstance)
-               m_pInstance->DoCompleteAchievement(m_bIsRegularMode ? GROBBULUS_DEAD : GROBBULUS_DEAD_H);
+            if(m_pInstance)
+                m_pInstance->DoCompleteAchievement(m_bIsRegularMode ? GROBBULUS_DEAD : GROBBULUS_DEAD_H);
         }
     }
 
@@ -112,6 +114,9 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
+			
+        // Achiev timer
+        uiEncounterTimer += diff;
 
         if (PoisonCloud_Timer < diff)
         {
