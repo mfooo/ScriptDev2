@@ -563,7 +563,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                         m_uiPortalNeedResTimer = 0;
                     }
                     m_creature->GetMotionMaster()->Clear();
-                    m_creature->GetMotionMaster()->MovePoint(POINT_ID_WAYPOINT, WPs[m_uiWP].x, WPs[m_uiWP].y, AIR_Z);
+                    m_creature->GetMotionMaster()->MovePoint(POINT_ID_WAYPOINT, WPs[m_uiWP].x, WPs[m_uiWP].y, AIR_Z, false);
                     m_bReadyForWPMove = false;
                     ++m_uiWP;
                     if (m_uiWP == 4)
@@ -757,7 +757,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                 m_creature->AddSplineFlag(SPLINEFLAG_FLYING);
                 SetCombatMovement(false);
                 m_creature->GetMotionMaster()->Clear();
-                m_creature->GetMotionMaster()->MovePoint(POINT_ID_VORTEX_AIR, CENTER_X, CENTER_Y, AIR_Z);
+                m_creature->GetMotionMaster()->MovePoint(POINT_ID_VORTEX_AIR, CENTER_X, CENTER_Y, AIR_Z, false);
                 m_uiSubPhase = SUBPHASE_VORTEX;
                 m_uiVortexPhase = 0;
                 m_uiVortexTimer = 60000;
@@ -782,7 +782,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                     m_creature->AddSplineFlag(SPLINEFLAG_FLYING);
                     SetCombatMovement(false);
                     m_creature->GetMotionMaster()->Clear();
-                    m_creature->GetMotionMaster()->MovePoint(0, CENTER_X, CENTER_Y, AIR_Z);
+                    m_creature->GetMotionMaster()->MovePoint(0, CENTER_X, CENTER_Y, AIR_Z, false);
                     m_bReadyForWPMove = false;
                     m_uiTimer = 23000;
                     return;
@@ -801,7 +801,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                     m_creature->SetSpeedRate(MOVE_RUN, 6.0f);
                     m_creature->GetMotionMaster()->Clear();
                     m_uiWP = urand(0, 3);
-                    m_creature->GetMotionMaster()->MovePoint(POINT_ID_PHASE_2_WP, WPs[m_uiWP].x, WPs[m_uiWP].y, AIR_Z);
+                    m_creature->GetMotionMaster()->MovePoint(POINT_ID_PHASE_2_WP, WPs[m_uiWP].x, WPs[m_uiWP].y, AIR_Z, false);
                     m_uiTimer = 15000;
                 }
                 else
@@ -856,12 +856,12 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                     if (m_uiSubPhase == SUBPHASE_DEEP_BREATH)
                     {
                         m_uiWP = urand(0, 3);
-                        m_creature->GetMotionMaster()->MovePoint(POINT_ID_PHASE_2_WP, WPs[m_uiWP].x, WPs[m_uiWP].y, AIR_Z);
+                        m_creature->GetMotionMaster()->MovePoint(POINT_ID_PHASE_2_WP, WPs[m_uiWP].x, WPs[m_uiWP].y, AIR_Z, false);
                     }
                     else
                     {
                         float fAng = M_PI/4 + m_creature->GetAngle(CENTER_X, CENTER_Y);
-                        m_creature->GetMotionMaster()->MovePoint(POINT_ID_PHASE_2_WP, CENTER_X-80.0f*cos(fAng), CENTER_Y-80.0f*sin(fAng), AIR_Z);
+                        m_creature->GetMotionMaster()->MovePoint(POINT_ID_PHASE_2_WP, CENTER_X-80.0f*cos(fAng), CENTER_Y-80.0f*sin(fAng), AIR_Z, false);
                     }
                     m_uiSubPhase = 0;
                     m_bReadyForWPMove = false;
@@ -889,7 +889,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
             if (m_uiDeepBreathTimer <= uiDiff)
             {
                 m_creature->GetMotionMaster()->Clear();
-                m_creature->GetMotionMaster()->MovePoint(POINT_ID_DEEP_BREATH, CENTER_X, CENTER_Y, AIR_Z+20.0f);
+                m_creature->GetMotionMaster()->MovePoint(POINT_ID_DEEP_BREATH, CENTER_X, CENTER_Y, AIR_Z+20.0f, false);
                 m_bReadyForWPMove = false;
                 m_uiTimer = 20000;
                 m_uiDeepBreathTimer = 63000;
@@ -932,7 +932,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                             pPlatform->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_DESTROYED);
 
 
-                    m_creature->GetMotionMaster()->MovePoint(0, CENTER_X, CENTER_Y, FLOOR_Z);
+                    m_creature->GetMotionMaster()->MovePoint(0, CENTER_X, CENTER_Y, FLOOR_Z, false);
                     DoScriptText(SAY_INTRO_PHASE3, m_creature);
 
                     m_uiSubPhase = SUBPHASE_DESTROY_PLATFORM_3;
@@ -1117,7 +1117,7 @@ struct MANGOS_DLL_DECL npc_power_sparkAI : public ScriptedAI
                             m_creature->ForcedDespawn(100);
                         }
                         else
-                            m_creature->GetMotionMaster()->MovePoint(0, pMalygos->GetPositionX(), pMalygos->GetPositionY(), pMalygos->GetPositionZ());
+                            m_creature->GetMotionMaster()->MovePoint(0, pMalygos->GetPositionX(), pMalygos->GetPositionY(), pMalygos->GetPositionZ(), false);
                     }
                     else
                         m_creature->StopMoving();
@@ -1198,7 +1198,7 @@ struct MANGOS_DLL_DECL npc_nexus_lordAI : public ScriptedAI
                         if (abs(fX - m_fTargetOldX) > 1.0f || abs(fY-m_fTargetOldY) > 1.0f)
                         {
                             pDisk->GetMotionMaster()->Clear();
-                            pDisk->GetMotionMaster()->MovePoint(0, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ());
+                            pDisk->GetMotionMaster()->MovePoint(0, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), false);
                         }
                         m_fTargetOldX = fX;
                         m_fTargetOldY = fY;
@@ -1423,7 +1423,7 @@ bool GOUse_go_focusing_iris(Player* pPlayer, GameObject* pGo)
 
             pMalygos->GetMotionMaster()->Clear();
             float fAng = pMalygos->GetAngle(CENTER_X, CENTER_Y);
-            pMalygos->GetMotionMaster()->MovePoint(POINT_ID_LAND, CENTER_X-40.76f*cos(fAng), CENTER_Y-40.76f*sin(fAng), FLOOR_Z+7.0f);
+            pMalygos->GetMotionMaster()->MovePoint(POINT_ID_LAND, CENTER_X-40.76f*cos(fAng), CENTER_Y-40.76f*sin(fAng), FLOOR_Z+7.0f, false);
             return true;
         }
         else
@@ -1547,7 +1547,7 @@ struct MANGOS_DLL_DECL npc_whyrmrest_skytalonAI : public ScriptedAI
                 {
                     float x, y, z;
                     owner->GetClosePoint(x, y, z, owner->GetObjectBoundingRadius(), 1.0f, owner->GetAngle(m_creature));
-                    m_creature->GetMotionMaster()->MovePoint(0, x, y, z);
+                    m_creature->GetMotionMaster()->MovePoint(0, x, y, z, false);
                     Active = true;
                 }
             }
