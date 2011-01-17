@@ -35,6 +35,7 @@ spell 50706
 spell 45109
 spell 45111
 spell 39246
+spell 55983
 EndContentData */
 
 #include "precompiled.h"
@@ -270,6 +271,13 @@ enum
     SPELL_DARKMENDER_TINCTURE           = 52741,
     SPELL_SUMMON_CORRUPTED_SCARLET      = 54415,
     NPC_CORPSES_RISE_CREDIT_BUNNY       = 29398,
+	
+    // quest "Blowing Hodir's Horn"
+	NPC_RESTLESS_FROSTBORN_WARRIOR      = 30135,
+	NPC_NIFFELEM_FROST_GIANT            = 29974,
+	SPELL_BLOW_HODIR_HORN               = 55983,
+	NPC_KC_REST                         = 30138,
+	NPC_KC_FROST                        = 30139
 };
 
 bool EffectAuraDummy_spell_aura_dummy_npc(const Aura* pAura, bool bApply)
@@ -747,6 +755,20 @@ bool EffectDummyCreature_spell_dummy_npc(Unit* pCaster, uint32 uiSpellId, SpellE
                     }
                 }
                 pCreatureTarget->ForcedDespawn();
+            }
+            return true;
+        }
+        case SPELL_BLOW_HODIR_HORN:
+        {
+            if (uiEffIndex == EFFECT_INDEX_0)
+            {
+                if (pCaster->GetTypeId() == TYPEID_PLAYER)
+                {
+                    if (pCreatureTarget->GetEntry() == NPC_RESTLESS_FROSTBORN_WARRIOR)
+                        ((Player*)pCaster)->KilledMonsterCredit(NPC_KC_FROST, pCreatureTarget->GetGUID());
+		            else if (pCreatureTarget->GetEntry() == NPC_NIFFELEM_FROST_GIANT)
+                        ((Player*)pCaster)->KilledMonsterCredit(NPC_KC_REST, pCreatureTarget->GetGUID());
+                }
             }
             return true;
         }
