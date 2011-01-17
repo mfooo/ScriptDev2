@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -17,12 +17,14 @@
 /* ScriptData
 SDName: Desolace
 SD%Complete: 100
-SDComment: Quest support: 5561
+SDComment: Quest support: 5561, 5381, 5581 
 SDCategory: Desolace
 EndScriptData */
 
 /* ContentData
 npc_aged_dying_ancient_kodo
+go_hand_of_iruxos_crystal
+go_demon_portal
 EndContentData */
 
 #include "precompiled.h"
@@ -116,7 +118,7 @@ CreatureAI* GetAI_npc_aged_dying_ancient_kodo(Creature* pCreature)
     return new npc_aged_dying_ancient_kodoAI(pCreature);
 }
 
-bool EffectDummyCreature_npc_aged_dying_ancient_kodo(Unit *pCaster, uint32 spellId, SpellEffectIndex effIndex, Creature *pCreatureTarget)
+bool EffectDummyNPC_npc_aged_dying_ancient_kodo(Unit *pCaster, uint32 spellId, SpellEffectIndex effIndex, Creature *pCreatureTarget)
 {
     //always check spellid and effectindex
     if (spellId == SPELL_KODO_KOMBO_ITEM && effIndex == EFFECT_INDEX_0)
@@ -161,6 +163,54 @@ bool GossipHello_npc_aged_dying_ancient_kodo(Player* pPlayer, Creature* pCreatur
     return true;
 }
 
+/*######
+## go_hand_of_iruxos_crystal
+######*/
+
+enum
+{
+	QUEST_HAND_OF_IRUXOS    = 5381,
+	NPC_DEMON_SPIRIT        = 11876
+
+};
+
+bool GOUse_go_hand_of_iruxos_crystal (Player* pPlayer, GameObject* pGo)
+{
+	Creature* pDemon = GetClosestCreatureWithEntry(pPlayer, NPC_DEMON_SPIRIT, 25.0f);
+	
+	if (pDemon)
+		return true;
+	
+	if (pPlayer->GetQuestStatus(QUEST_HAND_OF_IRUXOS) == QUEST_STATUS_INCOMPLETE)
+	{
+		pPlayer->SummonCreature(NPC_DEMON_SPIRIT, -350.605f, 1765.06f, 139.085f, 5.31098f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN , 99999999);
+	}
+	return true;
+};
+
+/*######
+## go_demon_portal
+######*/
+enum
+{
+    QUEST_PORTAL_LEGIONS             = 5581,
+    NPC_DEMON_PORTAL_GUARDIAN        = 11937
+
+};
+bool GOUse_go_demon_portal(Player* pPlayer, GameObject* pGo)
+{
+	Creature* pCreature = GetClosestCreatureWithEntry(pPlayer, NPC_DEMON_PORTAL_GUARDIAN, 5.0f);
+
+	if (pCreature)
+		return true;
+
+	if (pPlayer->GetQuestStatus(QUEST_PORTAL_LEGIONS) == QUEST_STATUS_INCOMPLETE)
+	{
+		pPlayer->SummonCreature(NPC_DEMON_PORTAL_GUARDIAN, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 99999999);
+	}
+	return true;
+};
+
 void AddSC_desolace()
 {
     Script *newscript;
@@ -168,7 +218,18 @@ void AddSC_desolace()
     newscript = new Script;
     newscript->Name = "npc_aged_dying_ancient_kodo";
     newscript->GetAI = &GetAI_npc_aged_dying_ancient_kodo;
-    newscript->pEffectDummyNPC = &EffectDummyCreature_npc_aged_dying_ancient_kodo;
+    newscript->pEffectDummyNPC = &EffectDummyNPC_npc_aged_dying_ancient_kodo;
     newscript->pGossipHello = &GossipHello_npc_aged_dying_ancient_kodo;
+    newscript->RegisterSelf();
+    
+    
+    newscript = new Script;	
+    newscript->Name = "go_hand_of_iruxos_crystal";
+    newscript->pGOUse = &GOUse_go_hand_of_iruxos_crystal;
+    newscript->RegisterSelf();
+    
+    newscript = new Script;	
+    newscript->Name = "go_demon_portal";
+    newscript->pGOUse = &GOUse_go_demon_portal;
     newscript->RegisterSelf();
 }
