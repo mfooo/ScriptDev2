@@ -28,7 +28,7 @@ enum
 {
     SPELL_ARCANE_MISSILES          = 15790,                 // SpellId not sure, original was 22272
     SPELL_SHADOW_SHIELD            = 12040,                 // SpellID not sure, original was 22417 stated as "wrong, but 12040 is wrong either."
-    SPELL_CURSE                    = 18702,
+    //SPELL_CURSE                    = 18702,
     SPELL_SHADOW_PORTAL            = 17950                  // TODO implement this spell(and other related port spells) in DB and MaNGOS
 };
 
@@ -83,7 +83,7 @@ struct MANGOS_DLL_DECL boss_darkmaster_gandlingAI : public ScriptedAI
         // Curse Timer
         if (m_uiCurseTimer < uiDiff)
         {
-            if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_CURSE) == CAST_OK)
+            if (DoCastSpellIfCan(m_creature->getVictim(), 18702) == CAST_OK)
                 m_uiCurseTimer = urand(15000, 27000);
         }
         else
