@@ -37,6 +37,7 @@ extern void AddSC_custom_npc_buffmaster();
 extern void AddSC_custom_items();
 extern void AddSC_custom_script_training_dummy();
 extern void AddSC_custom_npc_resetinstance();
+extern void AddSC_custom_boss_chen();
 
 //examples
 extern void AddSC_example_creature();
